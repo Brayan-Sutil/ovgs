@@ -1,0 +1,1 @@
+export { CrudPageLayout } from "./CrudPageLayout";

@@ -1,0 +1,13 @@
+type EmptyStateProps = {
+  title: string;
+  description: string;
+};
+
+export function EmptyState({ title, description }: EmptyStateProps) {
+  return (
+    <div className="rounded-md border border-dashed border-line bg-white p-8 text-center">
+      <h3 className="text-sm font-semibold text-ink">{title}</h3>
+      <p className="mt-1 text-sm text-slate-600">{description}</p>
+    </div>
+  );
+}

@@ -1,0 +1,51 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: ovgs-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ovgs
+      POSTGRES_USER: ovgs
+      POSTGRES_PASSWORD: ovgs
+    ports:
+      - "15433:5432"
+    volumes:
+      - ovgs-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ovgs -d ovgs"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    container_name: ovgs-api
+    environment:
+      DATABASE_URL: postgresql://ovgs:ovgs@postgres:5432/ovgs?schema=public
+      WEB_ORIGIN: http://localhost:3001
+      PORT: 3333
+    ports:
+      - "3333:3333"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: sh -c "pnpm --filter @ovgs/api db:push && pnpm --filter @ovgs/api db:seed && pnpm --filter @ovgs/api start"
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+      args:
+        NEXT_PUBLIC_API_URL: http://localhost:3333
+    container_name: ovgs-web
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3333
+    ports:
+      - "3001:3000"
+    depends_on:
+      - api
+
+volumes:
+  ovgs-postgres-data:
