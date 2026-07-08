@@ -6,20 +6,20 @@ export type TransportTypePayload = {
   active?: boolean;
 };
 
-export function listTransportTypes() {
+export const listTransportTypes = () => {
   return apiFetch<TransportType[]>("/transport-types");
-}
+};
 
-export function createTransportType(payload: TransportTypePayload) {
+export const createTransportType = (payload: TransportTypePayload) => {
   return apiFetch<TransportType>("/transport-types", {
     method: "POST",
     body: payload
   });
-}
+};
 
-export function updateTransportType(id: string, payload: Partial<TransportTypePayload>) {
+export const updateTransportType = (id: string, payload: Partial<TransportTypePayload>) => {
   return apiFetch<TransportType>(`/transport-types/${id}`, {
     method: "PATCH",
     body: payload
   });
-}
+};

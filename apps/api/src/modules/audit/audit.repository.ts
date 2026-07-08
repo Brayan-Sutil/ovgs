@@ -33,10 +33,10 @@ export class AuditRepository {
   }
 }
 
-function toNullableJson(value: RecordAuditEventInput["previousState"]) {
+const toNullableJson = (value: RecordAuditEventInput["previousState"]) => {
   if (value === undefined) {
     return undefined;
   }
 
   return value === null ? Prisma.JsonNull : value;
-}
+};

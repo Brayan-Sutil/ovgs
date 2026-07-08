@@ -123,7 +123,7 @@ export class SalesOrdersRepository {
   }
 }
 
-function buildDateRange(dateFrom?: string, dateTo?: string) {
+const buildDateRange = (dateFrom?: string, dateTo?: string) => {
   if (!dateFrom && !dateTo) {
     return undefined;
   }
@@ -132,4 +132,4 @@ function buildDateRange(dateFrom?: string, dateTo?: string) {
     gte: dateFrom ? new Date(dateFrom) : undefined,
     lte: dateTo ? new Date(dateTo) : undefined
   };
-}
+};

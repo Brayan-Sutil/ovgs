@@ -19,12 +19,12 @@ type DashboardLayoutProps = {
   children: ReactNode;
 };
 
-export function DashboardLayout({
+export const DashboardLayout = ({
   title,
   description,
   action,
   children
-}: DashboardLayoutProps) {
+}: DashboardLayoutProps) => {
   return (
     <div className="min-h-screen bg-surface">
       <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-line bg-white p-5 lg:block">
@@ -73,4 +73,4 @@ export function DashboardLayout({
       </div>
     </div>
   );
-}
+};

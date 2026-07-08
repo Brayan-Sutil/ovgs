@@ -5,7 +5,7 @@ import { ScheduleForm } from "@/components/organisms/ScheduleForm";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { useSchedulableOrders } from "@/features/sales-orders/hooks";
 
-export default function SchedulingPage() {
+const SchedulingPage = () => {
   const ordersQuery = useSchedulableOrders();
   const orders = ordersQuery.data ?? [];
 
@@ -41,4 +41,6 @@ export default function SchedulingPage() {
       </div>
     </DashboardLayout>
   );
-}
+};
+
+export default SchedulingPage;

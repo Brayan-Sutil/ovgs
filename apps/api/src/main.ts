@@ -5,7 +5,7 @@ import { DocumentBuilder, SwaggerModule } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { HttpExceptionFilter } from "./common/filters/http-exception.filter";
 
-async function bootstrap() {
+const bootstrap = async () => {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
@@ -31,6 +31,6 @@ async function bootstrap() {
   SwaggerModule.setup("docs", app, document);
 
   await app.listen(process.env.PORT ? Number(process.env.PORT) : 3333);
-}
+};
 
 void bootstrap();

@@ -7,7 +7,7 @@ import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { DetailPageLayout } from "@/components/templates/DetailPageLayout";
 import { useSalesOrder, useSalesOrderAuditEvents } from "@/features/sales-orders/hooks";
 
-export default function OrderDetailsPage({ params }: { params: { id: string } }) {
+const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
   const orderQuery = useSalesOrder(params.id);
   const auditQuery = useSalesOrderAuditEvents(params.id);
 
@@ -45,4 +45,6 @@ export default function OrderDetailsPage({ params }: { params: { id: string } })
       />
     </DashboardLayout>
   );
-}
+};
+
+export default OrderDetailsPage;

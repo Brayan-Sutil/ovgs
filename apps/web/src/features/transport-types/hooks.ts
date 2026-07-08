@@ -1,14 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createTransportType, listTransportTypes, updateTransportType } from "./api";
 
-export function useTransportTypes() {
+export const useTransportTypes = () => {
   return useQuery({
     queryKey: ["transport-types"],
     queryFn: listTransportTypes
   });
-}
+};
 
-export function useCreateTransportType() {
+export const useCreateTransportType = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: createTransportType,
@@ -16,9 +16,9 @@ export function useCreateTransportType() {
       void queryClient.invalidateQueries({ queryKey: ["transport-types"] });
     }
   });
-}
+};
 
-export function useUpdateTransportType() {
+export const useUpdateTransportType = () => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: ({
@@ -33,4 +33,4 @@ export function useUpdateTransportType() {
       void queryClient.invalidateQueries({ queryKey: ["customers"] });
     }
   });
-}
+};

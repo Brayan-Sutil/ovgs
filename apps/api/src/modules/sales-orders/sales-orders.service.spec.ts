@@ -9,7 +9,7 @@ const itemId = "44444444-4444-4444-8444-444444444444";
 const orderId = "55555555-5555-4555-8555-555555555555";
 
 describe("SalesOrdersService", () => {
-  function makeService(repositoryOverrides: Record<string, jest.Mock> = {}) {
+  const makeService = (repositoryOverrides: Record<string, jest.Mock> = {}) => {
     const repository = {
       findCustomerWithAuthorizedTransports: jest.fn().mockResolvedValue({
         id: customerId,
@@ -40,7 +40,7 @@ describe("SalesOrdersService", () => {
       repository,
       auditService
     };
-  }
+  };
 
   it("rejects sales order creation when the transport type is not authorized", async () => {
     const { service } = makeService({

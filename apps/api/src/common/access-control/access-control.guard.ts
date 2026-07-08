@@ -43,10 +43,10 @@ export class AccessControlGuard implements CanActivate {
   }
 }
 
-function resolveUserId(value: string | string[] | undefined) {
+const resolveUserId = (value: string | string[] | undefined) => {
   if (Array.isArray(value)) {
     return value[0] ?? "anonymous";
   }
 
   return value ?? "anonymous";
-}
+};

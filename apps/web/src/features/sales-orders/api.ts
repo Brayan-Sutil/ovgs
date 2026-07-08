@@ -22,7 +22,7 @@ export type UpdateSchedulePayload = {
   confirmed?: boolean;
 };
 
-export function listSalesOrders(filters: SalesOrderFilters = {}) {
+export const listSalesOrders = (filters: SalesOrderFilters = {}) => {
   const params = new URLSearchParams();
 
   Object.entries(filters).forEach(([key, value]) => {
@@ -33,44 +33,44 @@ export function listSalesOrders(filters: SalesOrderFilters = {}) {
 
   const query = params.toString();
   return apiFetch<SalesOrder[]>(`/sales-orders${query ? `?${query}` : ""}`);
-}
+};
 
-export function getSalesOrder(id: string) {
+export const getSalesOrder = (id: string) => {
   return apiFetch<SalesOrder>(`/sales-orders/${id}`);
-}
+};
 
-export function createSalesOrder(payload: CreateSalesOrderPayload) {
+export const createSalesOrder = (payload: CreateSalesOrderPayload) => {
   return apiFetch<SalesOrder>("/sales-orders", {
     method: "POST",
     body: payload
   });
-}
+};
 
-export function updateSalesOrderStatus(id: string, status: SalesOrderStatus) {
+export const updateSalesOrderStatus = (id: string, status: SalesOrderStatus) => {
   return apiFetch<SalesOrder>(`/sales-orders/${id}/status`, {
     method: "PATCH",
     body: { status }
   });
-}
+};
 
-export function updateSalesOrderSchedule(id: string, payload: UpdateSchedulePayload) {
+export const updateSalesOrderSchedule = (id: string, payload: UpdateSchedulePayload) => {
   return apiFetch<SalesOrder>(`/sales-orders/${id}/schedule`, {
     method: "PATCH",
     body: payload
   });
-}
+};
 
-export function updateSalesOrderTransport(id: string, transportTypeId: string) {
+export const updateSalesOrderTransport = (id: string, transportTypeId: string) => {
   return apiFetch<SalesOrder>(`/sales-orders/${id}/transport`, {
     method: "PATCH",
     body: { transportTypeId }
   });
-}
+};
 
-export function listSalesOrderAuditEvents(id: string) {
+export const listSalesOrderAuditEvents = (id: string) => {
   return apiFetch<AuditEvent[]>(`/sales-orders/${id}/audit-events`);
-}
+};
 
-export function listSchedulableOrders() {
+export const listSchedulableOrders = () => {
   return apiFetch<SalesOrder[]>("/scheduling");
-}
+};

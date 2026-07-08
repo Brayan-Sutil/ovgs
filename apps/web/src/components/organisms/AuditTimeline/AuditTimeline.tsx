@@ -6,7 +6,7 @@ type AuditTimelineProps = {
   loading?: boolean;
 };
 
-export function AuditTimeline({ events, loading }: AuditTimelineProps) {
+export const AuditTimeline = ({ events, loading }: AuditTimelineProps) => {
   if (loading) {
     return <div className="rounded-md border border-line bg-white p-5 text-sm">Carregando auditoria...</div>;
   }
@@ -40,4 +40,4 @@ export function AuditTimeline({ events, loading }: AuditTimelineProps) {
       </ol>
     </div>
   );
-}
+};

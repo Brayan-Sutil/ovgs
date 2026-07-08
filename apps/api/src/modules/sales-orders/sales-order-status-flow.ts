@@ -8,17 +8,17 @@ export const salesOrderStatusSequence: SalesOrderStatus[] = [
   SalesOrderStatus.ENTREGUE
 ];
 
-export function canTransitionSalesOrderStatus(
+export const canTransitionSalesOrderStatus = (
   currentStatus: SalesOrderStatus,
   nextStatus: SalesOrderStatus
-) {
+) => {
   const currentIndex = salesOrderStatusSequence.indexOf(currentStatus);
   const nextIndex = salesOrderStatusSequence.indexOf(nextStatus);
 
   return nextIndex === currentIndex + 1;
-}
+};
 
-export function getNextSalesOrderStatus(currentStatus: SalesOrderStatus) {
+export const getNextSalesOrderStatus = (currentStatus: SalesOrderStatus) => {
   const currentIndex = salesOrderStatusSequence.indexOf(currentStatus);
   return salesOrderStatusSequence[currentIndex + 1] ?? null;
-}
+};

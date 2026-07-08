@@ -5,7 +5,7 @@ import { PropsWithChildren, useState } from "react";
 import { Provider as ReduxProvider } from "react-redux";
 import { store } from "@/lib/store";
 
-export function Providers({ children }: PropsWithChildren) {
+export const Providers = ({ children }: PropsWithChildren) => {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -23,4 +23,4 @@ export function Providers({ children }: PropsWithChildren) {
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </ReduxProvider>
   );
-}
+};

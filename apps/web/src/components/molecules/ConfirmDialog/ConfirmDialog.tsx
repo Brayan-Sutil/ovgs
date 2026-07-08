@@ -11,13 +11,13 @@ type ConfirmDialogProps = {
   onConfirm: () => void;
 };
 
-export function ConfirmDialog({
+export const ConfirmDialog = ({
   title,
   description,
   confirmLabel,
   loading,
   onConfirm
-}: ConfirmDialogProps) {
+}: ConfirmDialogProps) => {
   return (
     <div className="rounded-md border border-line bg-white p-4">
       <div className="flex items-start gap-3">
@@ -34,4 +34,4 @@ export function ConfirmDialog({
       </div>
     </div>
   );
-}
+};

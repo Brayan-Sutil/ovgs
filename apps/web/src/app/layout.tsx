@@ -7,7 +7,7 @@ export const metadata: Metadata = {
   description: "Sistema de Gestao de Ordens de Venda"
 };
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
+const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <html lang="pt-BR">
       <body>
@@ -15,4 +15,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </body>
     </html>
   );
-}
+};
+
+export default RootLayout;

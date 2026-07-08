@@ -2,7 +2,7 @@ import { Prisma, PrismaClient, SalesOrderStatus } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-async function main() {
+const main = async () => {
   const caminhao = await prisma.transportType.upsert({
     where: { name: "Caminhao" },
     update: { active: true },
@@ -97,7 +97,7 @@ async function main() {
       }
     }
   });
-}
+};
 
 main()
   .finally(async () => {

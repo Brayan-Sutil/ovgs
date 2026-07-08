@@ -5,7 +5,7 @@ describe("SharingService", () => {
   const salesOrderId = "11111111-1111-4111-8111-111111111111";
   const token = "22222222-2222-4222-8222-222222222222";
 
-  function makeService(overrides: Record<string, jest.Mock> = {}) {
+  const makeService = (overrides: Record<string, jest.Mock> = {}) => {
     const sharingRepository = {
       createSalesOrderLink: jest.fn().mockResolvedValue({
         token,
@@ -30,7 +30,7 @@ describe("SharingService", () => {
       sharingRepository,
       salesOrdersService
     };
-  }
+  };
 
   it("creates a share link only for an existing sales order", async () => {
     const { service, salesOrdersService, sharingRepository } = makeService();

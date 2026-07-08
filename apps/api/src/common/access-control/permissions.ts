@@ -32,11 +32,11 @@ const modulePermissions: Record<UserRole, Partial<Record<AccessModule, AccessAct
   }
 };
 
-export function hasPermission(role: UserRole, policy: AccessPolicy) {
+export const hasPermission = (role: UserRole, policy: AccessPolicy) => {
   return modulePermissions[role][policy.module]?.includes(policy.action) ?? false;
-}
+};
 
-export function parseUserRole(value: string | string[] | undefined) {
+export const parseUserRole = (value: string | string[] | undefined) => {
   const role = Array.isArray(value) ? value[0] : value;
 
   if (!role || !Object.values(UserRole).includes(role as UserRole)) {
@@ -44,4 +44,4 @@ export function parseUserRole(value: string | string[] | undefined) {
   }
 
   return role as UserRole;
-}
+};

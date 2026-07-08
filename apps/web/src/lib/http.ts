@@ -11,10 +11,10 @@ export class ApiError extends Error {
   }
 }
 
-export async function apiFetch<T>(
+export const apiFetch = async <T>(
   path: string,
   options: Omit<RequestInit, "body"> & { body?: BodyInit | object | null } = {}
-): Promise<T> {
+): Promise<T> => {
   const headers = new Headers(options.headers);
   headers.set("x-user-role", headers.get("x-user-role") ?? USER_ROLE);
   headers.set("x-user-id", headers.get("x-user-id") ?? USER_ID);
@@ -45,4 +45,4 @@ export async function apiFetch<T>(
   }
 
   return response.json() as Promise<T>;
-}
+};

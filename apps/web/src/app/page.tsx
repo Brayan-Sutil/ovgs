@@ -6,7 +6,7 @@ import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { useSalesOrders } from "@/features/sales-orders/hooks";
 import { salesOrderStatuses } from "@/features/sales-orders/types";
 
-export default function DashboardPage() {
+const DashboardPage = () => {
   const ordersQuery = useSalesOrders();
   const orders = ordersQuery.data ?? [];
 
@@ -39,4 +39,6 @@ export default function DashboardPage() {
       <OrdersTable orders={orders.slice(0, 8)} loading={ordersQuery.isLoading} />
     </DashboardLayout>
   );
-}
+};
+
+export default DashboardPage;

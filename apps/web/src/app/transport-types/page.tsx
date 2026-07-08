@@ -18,7 +18,7 @@ const emptyForm = {
   active: true
 };
 
-export default function TransportTypesPage() {
+const TransportTypesPage = () => {
   const transportTypesQuery = useTransportTypes();
   const createTransportType = useCreateTransportType();
   const updateTransportType = useUpdateTransportType();
@@ -38,7 +38,7 @@ export default function TransportTypesPage() {
     });
   }, [editingTransportType]);
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessage(null);
 
@@ -58,7 +58,7 @@ export default function TransportTypesPage() {
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Nao foi possivel salvar.");
     }
-  }
+  };
 
   return (
     <DashboardLayout
@@ -131,4 +131,6 @@ export default function TransportTypesPage() {
       />
     </DashboardLayout>
   );
-}
+};
+
+export default TransportTypesPage;

@@ -10,7 +10,7 @@ import { useUpdateSalesOrderSchedule } from "@/features/sales-orders/hooks";
 import { scheduleFormSchema, ScheduleFormValues } from "@/features/sales-orders/schemas";
 import { SalesOrder } from "@/features/sales-orders/types";
 
-export function ScheduleForm({ order }: { order: SalesOrder }) {
+export const ScheduleForm = ({ order }: { order: SalesOrder }) => {
   const updateSchedule = useUpdateSalesOrderSchedule(order.id);
   const [message, setMessage] = useState<string | null>(null);
   const {
@@ -27,7 +27,7 @@ export function ScheduleForm({ order }: { order: SalesOrder }) {
     }
   });
 
-  async function onSubmit(values: ScheduleFormValues) {
+  const onSubmit = async (values: ScheduleFormValues) => {
     setMessage(null);
     try {
       await updateSchedule.mutateAsync(values);
@@ -35,7 +35,7 @@ export function ScheduleForm({ order }: { order: SalesOrder }) {
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar.");
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-4 rounded-md border border-line bg-white p-5">
@@ -61,4 +61,4 @@ export function ScheduleForm({ order }: { order: SalesOrder }) {
       </Button>
     </form>
   );
-}
+};

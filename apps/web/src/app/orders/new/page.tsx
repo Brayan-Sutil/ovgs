@@ -1,7 +1,7 @@
 import { OrderForm } from "@/components/organisms/OrderForm";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
 
-export default function NewOrderPage() {
+const NewOrderPage = () => {
   return (
     <DashboardLayout
       title="Criar Ordem de Venda"
@@ -10,4 +10,6 @@ export default function NewOrderPage() {
       <OrderForm />
     </DashboardLayout>
   );
-}
+};
+
+export default NewOrderPage;

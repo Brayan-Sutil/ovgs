@@ -14,13 +14,13 @@ const emptyForm = {
   description: ""
 };
 
-export default function ItemsPage() {
+const ItemsPage = () => {
   const itemsQuery = useItems();
   const createItem = useCreateItem();
   const [form, setForm] = useState(emptyForm);
   const [message, setMessage] = useState<string | null>(null);
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessage(null);
 
@@ -35,7 +35,7 @@ export default function ItemsPage() {
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Nao foi possivel criar o item.");
     }
-  }
+  };
 
   return (
     <DashboardLayout title="Itens" description="Cadastro e consulta de itens por SKU.">
@@ -97,4 +97,6 @@ export default function ItemsPage() {
       />
     </DashboardLayout>
   );
-}
+};
+
+export default ItemsPage;

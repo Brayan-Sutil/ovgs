@@ -13,7 +13,7 @@ import {
 } from "@/features/sales-orders/hooks";
 import { SalesOrder } from "@/features/sales-orders/types";
 
-export function OrderDetailsPanel({ order }: { order: SalesOrder }) {
+export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
   const updateStatus = useUpdateSalesOrderStatus(order.id);
   const updateTransport = useUpdateSalesOrderTransport(order.id);
   const [transportTypeId, setTransportTypeId] = useState(order.transportTypeId);
@@ -22,7 +22,7 @@ export function OrderDetailsPanel({ order }: { order: SalesOrder }) {
     (authorization) => authorization.transportType
   );
 
-  async function advanceStatus() {
+  const advanceStatus = async () => {
     if (!order.nextStatus) {
       return;
     }
@@ -34,9 +34,9 @@ export function OrderDetailsPanel({ order }: { order: SalesOrder }) {
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar o status.");
     }
-  }
+  };
 
-  async function changeTransport() {
+  const changeTransport = async () => {
     setMessage(null);
     try {
       await updateTransport.mutateAsync(transportTypeId);
@@ -44,7 +44,7 @@ export function OrderDetailsPanel({ order }: { order: SalesOrder }) {
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Nao foi possivel alterar o transporte.");
     }
-  }
+  };
 
   return (
     <div className="grid gap-5">
@@ -148,4 +148,4 @@ export function OrderDetailsPanel({ order }: { order: SalesOrder }) {
       {message ? <div className="rounded-md bg-surface p-3 text-sm text-slate-700">{message}</div> : null}
     </div>
   );
-}
+};

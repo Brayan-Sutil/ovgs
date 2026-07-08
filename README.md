@@ -148,6 +148,15 @@ apps/web/src/
   lib/
 ```
 
+## Padroes de codigo
+
+- Componentes React, hooks, clients de API e helpers usam declaracao por `const`.
+- Rotas do Next.js declaram o componente como `const Nome = () => {}` e fazem `export default Nome` no final, porque o App Router exige default export em `page.tsx` e `layout.tsx`.
+- Classes foram mantidas apenas onde o framework pede esse padrao, como controllers, services, repositories, guards e modules do NestJS.
+- Regras de negocio nao ficam em componentes React nem controllers: ficam em services e funcoes puras testaveis.
+- Componentes seguem Atomic Design sem criar abstracoes genericas prematuras.
+- Nao ha `any`, `as any`, `console.log` ou TODO nos arquivos de aplicacao.
+
 ## Decisoes arquiteturais
 
 - A API usa arquitetura modular do NestJS com `controller`, `service` e `repository`.

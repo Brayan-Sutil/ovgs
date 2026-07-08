@@ -14,12 +14,12 @@ const variants: Record<ButtonVariant, string> = {
   ghost: "text-ink hover:bg-surface"
 };
 
-export function Button({
+export const Button = ({
   className,
   variant = "primary",
   type = "button",
   ...props
-}: ButtonProps) {
+}: ButtonProps) => {
   return (
     <button
       type={type}
@@ -31,4 +31,4 @@ export function Button({
       {...props}
     />
   );
-}
+};

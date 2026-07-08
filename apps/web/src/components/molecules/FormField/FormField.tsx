@@ -6,7 +6,7 @@ type FormFieldProps = {
   children: ReactNode;
 };
 
-export function FormField({ label, error, children }: FormFieldProps) {
+export const FormField = ({ label, error, children }: FormFieldProps) => {
   return (
     <label className="grid gap-1.5 text-sm font-medium text-ink">
       <span>{label}</span>
@@ -14,4 +14,4 @@ export function FormField({ label, error, children }: FormFieldProps) {
       {error ? <span className="text-xs font-medium text-danger">{error}</span> : null}
     </label>
   );
-}
+};

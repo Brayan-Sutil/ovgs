@@ -24,7 +24,7 @@ type SelectedItem = {
   quantity: number;
 };
 
-export function OrderForm() {
+export const OrderForm = () => {
   const router = useRouter();
   const customersQuery = useCustomers();
   const itemsQuery = useItems();
@@ -71,7 +71,7 @@ export function OrderForm() {
     }
   }, [authorizedTransportTypes, setValue, transportTypeId]);
 
-  function addItem() {
+  const addItem = () => {
     const item = itemsQuery.data?.find((currentItem) => currentItem.id === itemId);
     if (!item || !quantity || quantity < 1) {
       setFormError("Selecione um item e informe uma quantidade valida.");
@@ -93,9 +93,9 @@ export function OrderForm() {
     setFormError(null);
     setValue("itemId", "");
     setValue("quantity", 1);
-  }
+  };
 
-  async function onSubmit(values: SalesOrderFormValues) {
+  const onSubmit = async (values: SalesOrderFormValues) => {
     setFormError(null);
 
     if (selectedItems.length === 0) {
@@ -125,7 +125,7 @@ export function OrderForm() {
     } catch (error) {
       setFormError(error instanceof Error ? error.message : "Nao foi possivel criar a ordem.");
     }
-  }
+  };
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="grid gap-5 rounded-md border border-line bg-white p-5">
@@ -229,4 +229,4 @@ export function OrderForm() {
       </div>
     </form>
   );
-}
+};

@@ -47,6 +47,6 @@ export class SharingService {
   }
 }
 
-function isExpired(expiresAt: Date | null) {
+const isExpired = (expiresAt: Date | null) => {
   return Boolean(expiresAt && expiresAt.getTime() <= Date.now());
-}
+};

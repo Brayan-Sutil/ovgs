@@ -25,7 +25,7 @@ type OperationalFiltersProps = {
   transportTypes: TransportType[];
 };
 
-export function OperationalFilters({ customers, transportTypes }: OperationalFiltersProps) {
+export const OperationalFilters = ({ customers, transportTypes }: OperationalFiltersProps) => {
   const dispatch = useAppDispatch();
   const filters = useAppSelector((state) => state.salesOrdersFilters);
 
@@ -98,4 +98,4 @@ export function OperationalFilters({ customers, transportTypes }: OperationalFil
       </div>
     </div>
   );
-}
+};

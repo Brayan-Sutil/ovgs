@@ -15,7 +15,7 @@ const tones: Record<BadgeTone, string> = {
   danger: "bg-red-100 text-red-800"
 };
 
-export function Badge({ className, tone = "neutral", ...props }: BadgeProps) {
+export const Badge = ({ className, tone = "neutral", ...props }: BadgeProps) => {
   return (
     <span
       className={clsx(
@@ -26,4 +26,4 @@ export function Badge({ className, tone = "neutral", ...props }: BadgeProps) {
       {...props}
     />
   );
-}
+};

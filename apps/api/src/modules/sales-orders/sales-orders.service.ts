@@ -180,7 +180,7 @@ export class SalesOrdersService {
   }
 }
 
-function getScheduleStatusPatch(status: SalesOrderStatus, shouldConfirm: boolean) {
+const getScheduleStatusPatch = (status: SalesOrderStatus, shouldConfirm: boolean) => {
   if (!shouldConfirm) {
     return undefined;
   }
@@ -196,20 +196,20 @@ function getScheduleStatusPatch(status: SalesOrderStatus, shouldConfirm: boolean
   throw new BadRequestException(
     "Somente Ordens de Venda planejadas podem ter agendamento confirmado"
   );
-}
+};
 
-function generateSalesOrderCode() {
+const generateSalesOrderCode = () => {
   const suffix = randomUUID().slice(0, 8).toUpperCase();
   return `OV-${suffix}`;
-}
+};
 
-function snapshotSalesOrder(order: {
+const snapshotSalesOrder = (order: {
   id: string;
   code: string;
   customerId: string;
   transportTypeId: string;
   status: SalesOrderStatus;
-}) {
+}) => {
   return {
     id: order.id,
     code: order.code,
@@ -217,18 +217,18 @@ function snapshotSalesOrder(order: {
     transportTypeId: order.transportTypeId,
     status: order.status
   };
-}
+};
 
-function snapshotSchedule(order: {
+const snapshotSchedule = (order: {
   deliveryDate: Date | null;
   deliveryWindowStart: string | null;
   deliveryWindowEnd: string | null;
   scheduleConfirmedAt: Date | null;
-}) {
+}) => {
   return {
     deliveryDate: order.deliveryDate?.toISOString() ?? null,
     deliveryWindowStart: order.deliveryWindowStart,
     deliveryWindowEnd: order.deliveryWindowEnd,
     scheduleConfirmedAt: order.scheduleConfirmedAt?.toISOString() ?? null
   };
-}
+};

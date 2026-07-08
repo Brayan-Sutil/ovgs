@@ -9,6 +9,6 @@ const statusTone: Record<SalesOrderStatus, "neutral" | "success" | "warning" | "
   ENTREGUE: "success"
 };
 
-export function StatusBadge({ status }: { status: SalesOrderStatus }) {
+export const StatusBadge = ({ status }: { status: SalesOrderStatus }) => {
   return <Badge tone={statusTone[status]}>{status.replace("_", " ")}</Badge>;
-}
+};

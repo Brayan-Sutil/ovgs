@@ -24,7 +24,7 @@ const emptyForm: CustomerFormState = {
   authorizedTransportTypeIds: []
 };
 
-export default function CustomersPage() {
+const CustomersPage = () => {
   const customersQuery = useCustomers();
   const transportTypesQuery = useTransportTypes();
   const createCustomer = useCreateCustomer();
@@ -49,7 +49,7 @@ export default function CustomersPage() {
     });
   }, [editingCustomer]);
 
-  async function submit(event: FormEvent<HTMLFormElement>) {
+  const submit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setMessage(null);
 
@@ -73,16 +73,16 @@ export default function CustomersPage() {
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Nao foi possivel salvar.");
     }
-  }
+  };
 
-  function toggleTransportType(transportTypeId: string) {
+  const toggleTransportType = (transportTypeId: string) => {
     setForm((currentForm) => ({
       ...currentForm,
       authorizedTransportTypeIds: currentForm.authorizedTransportTypeIds.includes(transportTypeId)
         ? currentForm.authorizedTransportTypeIds.filter((id) => id !== transportTypeId)
         : [...currentForm.authorizedTransportTypeIds, transportTypeId]
     }));
-  }
+  };
 
   return (
     <DashboardLayout title="Clientes" description="Cadastro, consulta e edicao de clientes.">
@@ -177,4 +177,6 @@ export default function CustomersPage() {
       />
     </DashboardLayout>
   );
-}
+};
+
+export default CustomersPage;

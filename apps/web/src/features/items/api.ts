@@ -8,13 +8,13 @@ export type ItemPayload = {
   active?: boolean;
 };
 
-export function listItems() {
+export const listItems = () => {
   return apiFetch<Item[]>("/items");
-}
+};
 
-export function createItem(payload: ItemPayload) {
+export const createItem = (payload: ItemPayload) => {
   return apiFetch<Item>("/items", {
     method: "POST",
     body: payload
   });
-}
+};

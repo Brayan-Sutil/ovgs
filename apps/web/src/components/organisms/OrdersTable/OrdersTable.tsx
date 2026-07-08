@@ -8,7 +8,7 @@ type OrdersTableProps = {
   loading?: boolean;
 };
 
-export function OrdersTable({ orders, loading }: OrdersTableProps) {
+export const OrdersTable = ({ orders, loading }: OrdersTableProps) => {
   if (loading) {
     return <div className="rounded-md border border-line bg-white p-5 text-sm">Carregando ordens...</div>;
   }
@@ -63,4 +63,4 @@ export function OrdersTable({ orders, loading }: OrdersTableProps) {
       </div>
     </div>
   );
-}
+};

@@ -9,7 +9,7 @@ import { useSalesOrders } from "@/features/sales-orders/hooks";
 import { useTransportTypes } from "@/features/transport-types/hooks";
 import { useAppSelector } from "@/lib/redux-hooks";
 
-export default function OrdersPage() {
+const OrdersPage = () => {
   const filters = useAppSelector((state) => state.salesOrdersFilters);
   const ordersQuery = useSalesOrders(filters);
   const customersQuery = useCustomers();
@@ -37,4 +37,6 @@ export default function OrdersPage() {
       </div>
     </DashboardLayout>
   );
-}
+};
+
+export default OrdersPage;

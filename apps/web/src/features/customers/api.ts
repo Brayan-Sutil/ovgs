@@ -8,20 +8,20 @@ export type CustomerPayload = {
   authorizedTransportTypeIds?: string[];
 };
 
-export function listCustomers() {
+export const listCustomers = () => {
   return apiFetch<Customer[]>("/customers");
-}
+};
 
-export function createCustomer(payload: CustomerPayload) {
+export const createCustomer = (payload: CustomerPayload) => {
   return apiFetch<Customer>("/customers", {
     method: "POST",
     body: payload
   });
-}
+};
 
-export function updateCustomer(id: string, payload: Partial<CustomerPayload>) {
+export const updateCustomer = (id: string, payload: Partial<CustomerPayload>) => {
   return apiFetch<Customer>(`/customers/${id}`, {
     method: "PATCH",
     body: payload
   });
-}
+};
