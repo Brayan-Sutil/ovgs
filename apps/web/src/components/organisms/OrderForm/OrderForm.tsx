@@ -5,6 +5,7 @@ import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
@@ -121,6 +122,7 @@ export const OrderForm = () => {
           quantity: item.quantity
         }))
       });
+      toast.success(`Ordem ${order.code} criada com sucesso.`);
       router.push(`/orders/${order.id}`);
     } catch (error) {
       setFormError(error instanceof Error ? error.message : "Nao foi possivel criar a ordem.");

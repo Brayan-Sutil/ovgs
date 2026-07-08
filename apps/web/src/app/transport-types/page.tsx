@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
@@ -48,10 +49,10 @@ const TransportTypesPage = () => {
           id: editingTransportType.id,
           payload: form
         });
-        setMessage("Tipo de transporte atualizado.");
+        toast.success("Tipo de transporte atualizado com sucesso.");
       } else {
         await createTransportType.mutateAsync(form);
-        setMessage("Tipo de transporte criado.");
+        toast.success("Tipo de transporte criado com sucesso.");
       }
       setEditingTransportType(null);
       setForm(emptyForm);

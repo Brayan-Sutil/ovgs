@@ -2,6 +2,7 @@
 
 import { ArrowRight, Truck } from "lucide-react";
 import { useState } from "react";
+import { toast } from "react-toastify";
 import { Button } from "@/components/atoms/Button";
 import { Select } from "@/components/atoms/Select";
 import { ConfirmDialog } from "@/components/molecules/ConfirmDialog";
@@ -30,7 +31,7 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
     setMessage(null);
     try {
       await updateStatus.mutateAsync(order.nextStatus);
-      setMessage("Status atualizado.");
+      toast.success("Status atualizado com sucesso.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar o status.");
     }
@@ -40,7 +41,7 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
     setMessage(null);
     try {
       await updateTransport.mutateAsync(transportTypeId);
-      setMessage("Transporte atualizado.");
+      toast.success("Transporte atualizado com sucesso.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Nao foi possivel alterar o transporte.");
     }

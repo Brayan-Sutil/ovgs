@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
@@ -31,7 +32,7 @@ export const ScheduleForm = ({ order }: { order: SalesOrder }) => {
     setMessage(null);
     try {
       await updateSchedule.mutateAsync(values);
-      setMessage("Agendamento atualizado.");
+      toast.success("Agendamento atualizado com sucesso.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar.");
     }

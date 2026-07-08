@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useState } from "react";
+import { toast } from "react-toastify";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
@@ -31,7 +32,7 @@ const ItemsPage = () => {
         description: form.description || undefined
       });
       setForm(emptyForm);
-      setMessage("Item criado.");
+      toast.success("Item criado com sucesso.");
     } catch (error) {
       setMessage(error instanceof Error ? error.message : "Nao foi possivel criar o item.");
     }

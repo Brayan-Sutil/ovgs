@@ -1,6 +1,7 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
+import { toast } from "react-toastify";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
@@ -63,10 +64,10 @@ const CustomersPage = () => {
     try {
       if (editingCustomer) {
         await updateCustomer.mutateAsync({ id: editingCustomer.id, payload });
-        setMessage("Cliente atualizado.");
+        toast.success("Cliente atualizado com sucesso.");
       } else {
         await createCustomer.mutateAsync(payload);
-        setMessage("Cliente criado.");
+        toast.success("Cliente criado com sucesso.");
       }
       setEditingCustomer(null);
       setForm(emptyForm);

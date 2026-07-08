@@ -28,6 +28,7 @@ Frontend:
 - React Hook Form
 - Zod
 - React Testing Library
+- React-Toastify
 
 ## Controle de acesso
 
@@ -166,6 +167,7 @@ apps/web/src/
 - React Query gerencia server state, cache e invalidacao.
 - Redux Toolkit foi usado apenas para filtros operacionais da tela de Ordens, evitando duplicacao de dados da API.
 - Redux Saga nao foi usado porque o dominio implementado nao possui fluxo assincrono orquestrado o bastante para justificar a dependencia.
+- React-Toastify foi usado para feedbacks de sucesso por ser uma biblioteca madura, simples de configurar e com versao recente.
 - Atomic Design foi aplicado com pragmatismo: componentes visuais pequenos, organismos de dominio e templates de pagina.
 
 ## Modelagem de dominio
