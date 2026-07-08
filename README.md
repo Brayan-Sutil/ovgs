@@ -29,6 +29,24 @@ Frontend:
 - Zod
 - React Testing Library
 
+## Controle de acesso
+
+Para manter o desafio focado no dominio, a autenticacao foi simulada por headers HTTP.
+Rotas protegidas exigem:
+
+```txt
+x-user-role: MASTER_ADMIN | OPERATIONS | VIEWER
+x-user-id: identificador-do-usuario
+```
+
+Papeis:
+
+- `MASTER_ADMIN`: acesso total a todos os modulos, CRUD e compartilhamento.
+- `OPERATIONS`: leitura dos cadastros, operacao de OVs, agendamento e auditoria.
+- `VIEWER`: acesso somente leitura.
+
+O frontend envia `MASTER_ADMIN` por padrao para manter a demo operacional. Em producao, essa camada deveria ser substituida por autenticacao real com JWT/sessao e claims de permissao.
+
 ## Como executar com Docker
 
 ```bash
@@ -211,12 +229,16 @@ GET    /sales-orders/:id
 PATCH  /sales-orders/:id/status
 PATCH  /sales-orders/:id/schedule
 PATCH  /sales-orders/:id/transport
+POST   /sales-orders/:id/share
 
 GET    /scheduling
 PATCH  /scheduling/:salesOrderId
 
 GET    /audit-events
 GET    /sales-orders/:id/audit-events
+
+GET    /health
+GET    /shared/sales-orders/:token
 ```
 
 ## Testes
@@ -226,6 +248,11 @@ Backend:
 - teste unitario do fluxo de status;
 - teste unitario das regras de negocio de Ordem de Venda;
 - teste de integracao HTTP cobrindo criacao de OV e auditoria.
+- teste de conexao/health check;
+- teste de matriz de permissoes e `MASTER_ADMIN`;
+- teste de acesso a modulos protegidos;
+- teste de bloqueio de CRUD para `VIEWER`;
+- teste de compartilhamento por token.
 
 Frontend:
 
@@ -253,6 +280,11 @@ Frontend:
 | Tratamento de estados | Loading, empty, error e success simples |
 | Validacoes de entrada | DTOs no backend, Zod/RHF no frontend |
 | OpenAPI/Swagger | `/docs` |
+| Conexoes | `/health` valida conectividade com banco |
+| Acesso a modulos | Guard por modulo e acao |
+| Master admin | `MASTER_ADMIN` com acesso total testado |
+| Controle de acesso ao CRUD | Escritas bloqueadas para `VIEWER` |
+| Compartilhar | Link publico por token para Ordem de Venda |
 
 ## Escalabilidade e performance
 

@@ -94,3 +94,15 @@ model AuditEvent {
 
   @@index([entityType, entityId])
 }
+
+model ShareLink {
+  id         String   @id @default(uuid())
+  token      String   @unique
+  entityType String
+  entityId   String
+  createdBy  String
+  expiresAt  DateTime?
+  createdAt  DateTime @default(now())
+
+  @@index([entityType, entityId])
+}
