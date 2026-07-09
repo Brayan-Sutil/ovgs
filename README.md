@@ -6,6 +6,11 @@
 - API: https://ovgs-api.onrender.com
 - Health check: https://ovgs-api.onrender.com/health
 
+## CI/CD
+
+- CI: GitHub Actions executa testes e builds em push e pull request para `main`.
+- CD: Vercel e Render estão conectados ao repositório e publicam a partir da branch `main`.
+
 Implementação full stack do desafio técnico **Sistema de Gestão de Ordens de Venda (OVGS)**.
 
 O projeto centraliza o ciclo de vida de Ordens de Venda, com backend real, banco relacional, interface web, validações, auditoria, controle de acesso e testes automatizados.
