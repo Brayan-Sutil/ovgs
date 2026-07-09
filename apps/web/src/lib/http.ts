@@ -5,11 +5,50 @@ const USER_ID = process.env.NEXT_PUBLIC_USER_ID ?? "demo-master-admin";
 export class ApiError extends Error {
   constructor(
     message: string,
-    readonly status: number
+    readonly status: number,
+    readonly fields: string[] = []
   ) {
     super(message);
   }
 }
+
+const getApiErrorPayload = (payload: unknown) => {
+  if (!payload || typeof payload !== "object" || !("error" in payload)) {
+    return {
+      message: "Nao foi possivel concluir a operacao",
+      fields: []
+    };
+  }
+
+  const error = (payload as { error?: unknown }).error;
+
+  if (typeof error === "string") {
+    return {
+      message: error,
+      fields: []
+    };
+  }
+
+  if (!error || typeof error !== "object") {
+    return {
+      message: "Nao foi possivel concluir a operacao",
+      fields: []
+    };
+  }
+
+  const { message, fields } = error as { message?: unknown; fields?: unknown };
+
+  return {
+    message: Array.isArray(message)
+      ? message.join("\n")
+      : typeof message === "string"
+        ? message
+        : "Nao foi possivel concluir a operacao",
+    fields: Array.isArray(fields)
+      ? fields.filter((field): field is string => typeof field === "string")
+      : []
+  };
+};
 
 export const apiFetch = async <T>(
   path: string,
@@ -33,11 +72,8 @@ export const apiFetch = async <T>(
 
   if (!response.ok) {
     const payload = await response.json().catch(() => null);
-    const message =
-      typeof payload?.error === "string"
-        ? payload.error
-        : payload?.error?.message ?? "Nao foi possivel concluir a operacao";
-    throw new ApiError(message, response.status);
+    const { message, fields } = getApiErrorPayload(payload);
+    throw new ApiError(message, response.status, fields);
   }
 
   if (response.status === 204) {

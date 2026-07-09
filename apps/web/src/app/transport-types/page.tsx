@@ -1,7 +1,8 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
@@ -13,8 +14,13 @@ import {
   useTransportTypes,
   useUpdateTransportType
 } from "@/features/transport-types/hooks";
+import {
+  transportTypeFormSchema,
+  TransportTypeFormValues
+} from "@/features/transport-types/schemas";
+import { setFormApiError } from "@/lib/form-errors";
 
-const emptyForm = {
+const emptyForm: TransportTypeFormValues = {
   name: "",
   active: true
 };
@@ -24,41 +30,64 @@ const TransportTypesPage = () => {
   const createTransportType = useCreateTransportType();
   const updateTransportType = useUpdateTransportType();
   const [editingTransportType, setEditingTransportType] = useState<TransportType | null>(null);
-  const [form, setForm] = useState(emptyForm);
-  const [message, setMessage] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError,
+    clearErrors,
+    formState: { errors }
+  } = useForm<TransportTypeFormValues>({
+    resolver: zodResolver(transportTypeFormSchema),
+    defaultValues: emptyForm
+  });
 
   useEffect(() => {
     if (!editingTransportType) {
-      setForm(emptyForm);
+      reset(emptyForm);
+      clearErrors();
       return;
     }
 
-    setForm({
+    reset({
       name: editingTransportType.name,
       active: editingTransportType.active
     });
-  }, [editingTransportType]);
+    clearErrors();
+  }, [clearErrors, editingTransportType, reset]);
 
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setMessage(null);
-
+  const submit = async (values: TransportTypeFormValues) => {
+    clearErrors();
     try {
       if (editingTransportType) {
         await updateTransportType.mutateAsync({
           id: editingTransportType.id,
-          payload: form
+          payload: values
         });
-        toast.success("Tipo de transporte atualizado com sucesso.");
       } else {
-        await createTransportType.mutateAsync(form);
-        toast.success("Tipo de transporte criado com sucesso.");
+        await createTransportType.mutateAsync(values);
       }
       setEditingTransportType(null);
-      setForm(emptyForm);
+      reset(emptyForm);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Nao foi possivel salvar.");
+      setFormApiError<TransportTypeFormValues>({
+        error,
+        fallback: "Nao foi possivel salvar o tipo de transporte.",
+        fieldMap: {
+          name: {
+            field: "name",
+            message: "Nome ja cadastrado."
+          }
+        },
+        setError
+      });
     }
+  };
+
+  const cancelEdit = () => {
+    setEditingTransportType(null);
+    reset(emptyForm);
+    clearErrors();
   };
 
   return (
@@ -68,32 +97,28 @@ const TransportTypesPage = () => {
     >
       <CrudPageLayout
         form={
-          <form onSubmit={submit} className="grid gap-4">
+          <form noValidate onSubmit={handleSubmit(submit)} className="grid gap-4">
             <h2 className="text-base font-semibold text-ink">
               {editingTransportType ? "Editar transporte" : "Novo transporte"}
             </h2>
-            <FormField label="Nome">
-              <Input
-                value={form.name}
-                onChange={(event) => setForm({ ...form, name: event.target.value })}
-                required
-              />
+            <FormField label="Nome" error={errors.name?.message}>
+              <Input aria-invalid={Boolean(errors.name)} {...register("name")} />
             </FormField>
             <label className="flex items-center gap-2 text-sm font-medium text-ink">
-              <input
-                type="checkbox"
-                checked={form.active}
-                onChange={(event) => setForm({ ...form, active: event.target.checked })}
-              />
+              <input type="checkbox" {...register("active")} />
               Ativo
             </label>
-            {message ? <div className="rounded-md bg-surface p-3 text-sm">{message}</div> : null}
+            {errors.root?.server?.message ? (
+              <div className="rounded-md bg-red-50 p-3 text-sm font-medium text-danger">
+                {errors.root.server.message}
+              </div>
+            ) : null}
             <div className="flex gap-2">
               <Button type="submit" disabled={createTransportType.isPending || updateTransportType.isPending}>
                 Salvar
               </Button>
               {editingTransportType ? (
-                <Button type="button" variant="secondary" onClick={() => setEditingTransportType(null)}>
+                <Button type="button" variant="secondary" onClick={cancelEdit}>
                   Cancelar
                 </Button>
               ) : null}

@@ -5,7 +5,6 @@ import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
-import { toast } from "react-toastify";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
@@ -17,6 +16,7 @@ import {
   salesOrderFormSchema,
   SalesOrderFormValues
 } from "@/features/sales-orders/schemas";
+import { setFormApiError } from "@/lib/form-errors";
 
 type SelectedItem = {
   itemId: string;
@@ -31,13 +31,14 @@ export const OrderForm = () => {
   const itemsQuery = useItems();
   const createOrder = useCreateSalesOrder();
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
-  const [formError, setFormError] = useState<string | null>(null);
 
   const {
     register,
     handleSubmit,
     watch,
     setValue,
+    setError,
+    clearErrors,
     formState: { errors }
   } = useForm<SalesOrderFormValues>({
     resolver: zodResolver(salesOrderFormSchema),
@@ -74,8 +75,21 @@ export const OrderForm = () => {
 
   const addItem = () => {
     const item = itemsQuery.data?.find((currentItem) => currentItem.id === itemId);
-    if (!item || !quantity || quantity < 1) {
-      setFormError("Selecione um item e informe uma quantidade valida.");
+    clearErrors(["itemId", "quantity"]);
+
+    if (!item) {
+      setError("itemId", {
+        type: "manual",
+        message: "Selecione um item"
+      });
+      return;
+    }
+
+    if (!quantity || quantity < 1) {
+      setError("quantity", {
+        type: "manual",
+        message: "Informe uma quantidade valida"
+      });
       return;
     }
 
@@ -91,16 +105,18 @@ export const OrderForm = () => {
         }
       ];
     });
-    setFormError(null);
     setValue("itemId", "");
     setValue("quantity", 1);
   };
 
   const onSubmit = async (values: SalesOrderFormValues) => {
-    setFormError(null);
+    clearErrors();
 
     if (selectedItems.length === 0) {
-      setFormError("Adicione ao menos um item a Ordem de Venda.");
+      setError("itemId", {
+        type: "manual",
+        message: "Adicione ao menos um item a Ordem de Venda."
+      });
       return;
     }
 
@@ -109,7 +125,10 @@ export const OrderForm = () => {
     );
 
     if (!isAuthorized) {
-      setFormError("Tipo de transporte nao autorizado para o cliente selecionado.");
+      setError("transportTypeId", {
+        type: "manual",
+        message: "Tipo de transporte nao autorizado para o cliente selecionado."
+      });
       return;
     }
 
@@ -122,15 +141,32 @@ export const OrderForm = () => {
           quantity: item.quantity
         }))
       });
-      toast.success(`Ordem ${order.code} criada com sucesso.`);
       router.push(`/orders/${order.id}`);
     } catch (error) {
-      setFormError(error instanceof Error ? error.message : "Nao foi possivel criar a ordem.");
+      setFormApiError<SalesOrderFormValues>({
+        error,
+        fallback: "Nao foi possivel criar a ordem.",
+        fieldMap: {
+          customerId: {
+            field: "customerId",
+            message: "Cliente invalido."
+          },
+          transportTypeId: {
+            field: "transportTypeId",
+            message: "Tipo de transporte invalido."
+          }
+        },
+        setError
+      });
     }
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="grid gap-5 rounded-md border border-line bg-white p-5">
+    <form
+      noValidate
+      onSubmit={handleSubmit(onSubmit)}
+      className="grid gap-5 rounded-md border border-line bg-white p-5"
+    >
       <div>
         <h2 className="text-lg font-semibold text-ink">Nova Ordem de Venda</h2>
         <p className="mt-1 text-sm text-slate-600">Cliente, transporte autorizado e itens cadastrados.</p>
@@ -222,7 +258,11 @@ export const OrderForm = () => {
         </div>
       ) : null}
 
-      {formError ? <div className="rounded-md bg-red-50 p-3 text-sm font-medium text-danger">{formError}</div> : null}
+      {errors.root?.server?.message ? (
+        <div className="rounded-md bg-red-50 p-3 text-sm font-medium text-danger">
+          {errors.root.server.message}
+        </div>
+      ) : null}
 
       <div className="flex justify-end">
         <Button type="submit" disabled={createOrder.isPending}>

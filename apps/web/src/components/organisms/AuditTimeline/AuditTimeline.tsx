@@ -16,16 +16,16 @@ export const AuditTimeline = ({ events, loading }: AuditTimelineProps) => {
   }
 
   return (
-    <div className="rounded-md border border-line bg-white p-5">
+    <div className="min-w-0 rounded-md border border-line bg-white p-5">
       <h2 className="text-base font-semibold text-ink">Auditoria</h2>
-      <ol className="mt-4 grid gap-4">
+      <ol className="mt-4 grid min-w-0 gap-4">
         {events.map((event) => (
-          <li key={event.id} className="border-l-2 border-brand pl-4">
+          <li key={event.id} className="min-w-0 border-l-2 border-brand pl-4">
             <div className="text-sm font-semibold text-ink">{event.action}</div>
             <div className="text-xs text-slate-500">
               {new Date(event.createdAt).toLocaleString("pt-BR")}
             </div>
-            <pre className="mt-2 max-h-40 overflow-auto rounded-md bg-surface p-3 text-xs text-slate-700">
+            <pre className="mt-2 max-h-40 max-w-full overflow-auto whitespace-pre-wrap break-words rounded-md bg-surface p-3 text-xs text-slate-700">
               {JSON.stringify(
                 {
                   anterior: event.previousState,

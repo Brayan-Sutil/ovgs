@@ -3,7 +3,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { PropsWithChildren, useState } from "react";
 import { Provider as ReduxProvider } from "react-redux";
-import { ToastContainer } from "react-toastify";
 import { store } from "@/lib/store";
 
 export const Providers = ({ children }: PropsWithChildren) => {
@@ -21,19 +20,7 @@ export const Providers = ({ children }: PropsWithChildren) => {
 
   return (
     <ReduxProvider store={store}>
-      <QueryClientProvider client={queryClient}>
-        {children}
-        <ToastContainer
-          autoClose={2500}
-          closeOnClick
-          draggable={false}
-          hideProgressBar
-          newestOnTop
-          pauseOnHover
-          position="top-right"
-          theme="light"
-        />
-      </QueryClientProvider>
+      <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
     </ReduxProvider>
   );
 };

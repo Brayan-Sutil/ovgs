@@ -2,7 +2,6 @@
 
 import { ArrowRight, Truck } from "lucide-react";
 import { useState } from "react";
-import { toast } from "react-toastify";
 import { Button } from "@/components/atoms/Button";
 import { Select } from "@/components/atoms/Select";
 import { ConfirmDialog } from "@/components/molecules/ConfirmDialog";
@@ -18,7 +17,8 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
   const updateStatus = useUpdateSalesOrderStatus(order.id);
   const updateTransport = useUpdateSalesOrderTransport(order.id);
   const [transportTypeId, setTransportTypeId] = useState(order.transportTypeId);
-  const [message, setMessage] = useState<string | null>(null);
+  const [statusError, setStatusError] = useState<string | null>(null);
+  const [transportError, setTransportError] = useState<string | null>(null);
   const authorizedTransportTypes = order.customer.authorizedTransportTypes.map(
     (authorization) => authorization.transportType
   );
@@ -28,52 +28,50 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
       return;
     }
 
-    setMessage(null);
+    setStatusError(null);
     try {
       await updateStatus.mutateAsync(order.nextStatus);
-      toast.success("Status atualizado com sucesso.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Nao foi possivel atualizar o status.");
+      setStatusError(error instanceof Error ? error.message : "Nao foi possivel atualizar o status.");
     }
   };
 
   const changeTransport = async () => {
-    setMessage(null);
+    setTransportError(null);
     try {
       await updateTransport.mutateAsync(transportTypeId);
-      toast.success("Transporte atualizado com sucesso.");
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Nao foi possivel alterar o transporte.");
+      setTransportError(error instanceof Error ? error.message : "Nao foi possivel alterar o transporte.");
     }
   };
 
   return (
-    <div className="grid gap-5">
-      <section className="rounded-md border border-line bg-white p-5">
+    <div className="grid min-w-0 max-w-full gap-5">
+      <section className="min-w-0 rounded-md border border-line bg-white p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
-          <div>
+          <div className="min-w-0">
             <div className="text-sm font-medium text-slate-500">Ordem de Venda</div>
-            <h2 className="text-2xl font-bold text-ink">{order.code}</h2>
+            <h2 className="break-words text-2xl font-bold text-ink">{order.code}</h2>
           </div>
           <StatusBadge status={order.status} />
         </div>
 
-        <dl className="mt-6 grid gap-4 sm:grid-cols-2">
-          <div>
+        <dl className="mt-6 grid min-w-0 gap-4 sm:grid-cols-2">
+          <div className="min-w-0">
             <dt className="text-xs uppercase text-slate-500">Cliente</dt>
-            <dd className="mt-1 text-sm font-semibold text-ink">{order.customer.name}</dd>
+            <dd className="mt-1 break-words text-sm font-semibold text-ink">{order.customer.name}</dd>
           </div>
-          <div>
+          <div className="min-w-0">
             <dt className="text-xs uppercase text-slate-500">Transporte atual</dt>
-            <dd className="mt-1 text-sm font-semibold text-ink">{order.transportType.name}</dd>
+            <dd className="mt-1 break-words text-sm font-semibold text-ink">{order.transportType.name}</dd>
           </div>
-          <div>
+          <div className="min-w-0">
             <dt className="text-xs uppercase text-slate-500">Data de entrega</dt>
             <dd className="mt-1 text-sm font-semibold text-ink">
               {order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString("pt-BR") : "-"}
             </dd>
           </div>
-          <div>
+          <div className="min-w-0">
             <dt className="text-xs uppercase text-slate-500">Janela</dt>
             <dd className="mt-1 text-sm font-semibold text-ink">
               {order.deliveryWindowStart && order.deliveryWindowEnd
@@ -84,10 +82,10 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
         </dl>
       </section>
 
-      <section className="rounded-md border border-line bg-white p-5">
+      <section className="min-w-0 rounded-md border border-line bg-white p-5">
         <h3 className="text-base font-semibold text-ink">Itens</h3>
-        <div className="mt-4 overflow-hidden rounded-md border border-line">
-          <table className="w-full text-left text-sm">
+        <div className="mt-4 overflow-x-auto rounded-md border border-line">
+          <table className="w-full min-w-[520px] text-left text-sm">
             <thead className="bg-surface text-xs uppercase text-slate-500">
               <tr>
                 <th className="px-3 py-2">SKU</th>
@@ -118,14 +116,25 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
         />
       ) : null}
 
-      <section className="rounded-md border border-line bg-white p-5">
+      {statusError ? (
+        <div className="rounded-md bg-red-50 p-3 text-sm font-medium text-danger">{statusError}</div>
+      ) : null}
+
+      <section className="min-w-0 rounded-md border border-line bg-white p-5">
         <h3 className="flex items-center gap-2 text-base font-semibold text-ink">
           <Truck size={18} aria-hidden />
           Transporte
         </h3>
-        <div className="mt-4 grid gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
-          <FormField label="Tipo autorizado">
-            <Select value={transportTypeId} onChange={(event) => setTransportTypeId(event.target.value)}>
+        <div className="mt-4 grid min-w-0 gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+          <FormField label="Tipo autorizado" error={transportError ?? undefined}>
+            <Select
+              aria-invalid={Boolean(transportError)}
+              value={transportTypeId}
+              onChange={(event) => {
+                setTransportTypeId(event.target.value);
+                setTransportError(null);
+              }}
+            >
               {authorizedTransportTypes.map((transportType) => (
                 <option key={transportType.id} value={transportType.id}>
                   {transportType.name}
@@ -133,9 +142,10 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
               ))}
             </Select>
           </FormField>
-          <div className="flex items-end">
+          <div className="flex min-w-0 items-end">
             <Button
               variant="secondary"
+              className="w-full sm:w-auto"
               disabled={transportTypeId === order.transportTypeId || updateTransport.isPending}
               onClick={changeTransport}
             >
@@ -145,8 +155,6 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
           </div>
         </div>
       </section>
-
-      {message ? <div className="rounded-md bg-surface p-3 text-sm text-slate-700">{message}</div> : null}
     </div>
   );
 };

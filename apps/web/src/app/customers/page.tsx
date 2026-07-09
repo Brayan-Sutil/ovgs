@@ -1,24 +1,20 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
-import { toast } from "react-toastify";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
 import { CrudPageLayout } from "@/components/templates/CrudPageLayout";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { useCreateCustomer, useCustomers, useUpdateCustomer } from "@/features/customers/hooks";
+import { customerFormSchema, CustomerFormValues } from "@/features/customers/schemas";
 import { Customer } from "@/features/sales-orders/types";
 import { useTransportTypes } from "@/features/transport-types/hooks";
+import { setFormApiError } from "@/lib/form-errors";
 
-type CustomerFormState = {
-  name: string;
-  document: string;
-  email: string;
-  authorizedTransportTypeIds: string[];
-};
-
-const emptyForm: CustomerFormState = {
+const emptyForm: CustomerFormValues = {
   name: "",
   document: "",
   email: "",
@@ -31,16 +27,26 @@ const CustomersPage = () => {
   const createCustomer = useCreateCustomer();
   const updateCustomer = useUpdateCustomer();
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
-  const [form, setForm] = useState<CustomerFormState>(emptyForm);
-  const [message, setMessage] = useState<string | null>(null);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    setError,
+    clearErrors,
+    formState: { errors }
+  } = useForm<CustomerFormValues>({
+    resolver: zodResolver(customerFormSchema),
+    defaultValues: emptyForm
+  });
 
   useEffect(() => {
     if (!editingCustomer) {
-      setForm(emptyForm);
+      reset(emptyForm);
+      clearErrors();
       return;
     }
 
-    setForm({
+    reset({
       name: editingCustomer.name,
       document: editingCustomer.document,
       email: editingCustomer.email ?? "",
@@ -48,71 +54,63 @@ const CustomersPage = () => {
         (authorization) => authorization.transportTypeId
       )
     });
-  }, [editingCustomer]);
+    clearErrors();
+  }, [clearErrors, editingCustomer, reset]);
 
-  const submit = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    setMessage(null);
-
+  const submit = async (values: CustomerFormValues) => {
+    clearErrors();
     const payload = {
-      name: form.name,
-      document: form.document,
-      email: form.email || undefined,
-      authorizedTransportTypeIds: form.authorizedTransportTypeIds
+      name: values.name,
+      document: values.document,
+      email: values.email || undefined,
+      authorizedTransportTypeIds: values.authorizedTransportTypeIds
     };
 
     try {
       if (editingCustomer) {
         await updateCustomer.mutateAsync({ id: editingCustomer.id, payload });
-        toast.success("Cliente atualizado com sucesso.");
       } else {
         await createCustomer.mutateAsync(payload);
-        toast.success("Cliente criado com sucesso.");
       }
       setEditingCustomer(null);
-      setForm(emptyForm);
+      reset(emptyForm);
     } catch (error) {
-      setMessage(error instanceof Error ? error.message : "Nao foi possivel salvar.");
+      setFormApiError<CustomerFormValues>({
+        error,
+        fallback: "Nao foi possivel salvar o cliente.",
+        fieldMap: {
+          document: {
+            field: "document",
+            message: "Documento ja cadastrado."
+          }
+        },
+        setError
+      });
     }
   };
 
-  const toggleTransportType = (transportTypeId: string) => {
-    setForm((currentForm) => ({
-      ...currentForm,
-      authorizedTransportTypeIds: currentForm.authorizedTransportTypeIds.includes(transportTypeId)
-        ? currentForm.authorizedTransportTypeIds.filter((id) => id !== transportTypeId)
-        : [...currentForm.authorizedTransportTypeIds, transportTypeId]
-    }));
+  const cancelEdit = () => {
+    setEditingCustomer(null);
+    reset(emptyForm);
+    clearErrors();
   };
 
   return (
     <DashboardLayout title="Clientes" description="Cadastro, consulta e edicao de clientes.">
       <CrudPageLayout
         form={
-          <form onSubmit={submit} className="grid gap-4">
+          <form noValidate onSubmit={handleSubmit(submit)} className="grid gap-4">
             <h2 className="text-base font-semibold text-ink">
               {editingCustomer ? "Editar cliente" : "Novo cliente"}
             </h2>
-            <FormField label="Nome">
-              <Input
-                value={form.name}
-                onChange={(event) => setForm({ ...form, name: event.target.value })}
-                required
-              />
+            <FormField label="Nome" error={errors.name?.message}>
+              <Input aria-invalid={Boolean(errors.name)} {...register("name")} />
             </FormField>
-            <FormField label="Documento">
-              <Input
-                value={form.document}
-                onChange={(event) => setForm({ ...form, document: event.target.value })}
-                required
-              />
+            <FormField label="Documento" error={errors.document?.message}>
+              <Input aria-invalid={Boolean(errors.document)} {...register("document")} />
             </FormField>
-            <FormField label="E-mail">
-              <Input
-                type="email"
-                value={form.email}
-                onChange={(event) => setForm({ ...form, email: event.target.value })}
-              />
+            <FormField label="E-mail" error={errors.email?.message}>
+              <Input type="email" aria-invalid={Boolean(errors.email)} {...register("email")} />
             </FormField>
             <div className="grid gap-2">
               <div className="text-sm font-medium text-ink">Transportes autorizados</div>
@@ -120,20 +118,29 @@ const CustomersPage = () => {
                 <label key={transportType.id} className="flex items-center gap-2 text-sm text-slate-700">
                   <input
                     type="checkbox"
-                    checked={form.authorizedTransportTypeIds.includes(transportType.id)}
-                    onChange={() => toggleTransportType(transportType.id)}
+                    value={transportType.id}
+                    {...register("authorizedTransportTypeIds")}
                   />
                   {transportType.name}
                 </label>
               ))}
+              {errors.authorizedTransportTypeIds?.message ? (
+                <span className="text-xs font-medium text-danger">
+                  {errors.authorizedTransportTypeIds.message}
+                </span>
+              ) : null}
             </div>
-            {message ? <div className="rounded-md bg-surface p-3 text-sm">{message}</div> : null}
+            {errors.root?.server?.message ? (
+              <div className="rounded-md bg-red-50 p-3 text-sm font-medium text-danger">
+                {errors.root.server.message}
+              </div>
+            ) : null}
             <div className="flex gap-2">
               <Button type="submit" disabled={createCustomer.isPending || updateCustomer.isPending}>
                 Salvar
               </Button>
               {editingCustomer ? (
-                <Button type="button" variant="secondary" onClick={() => setEditingCustomer(null)}>
+                <Button type="button" variant="secondary" onClick={cancelEdit}>
                   Cancelar
                 </Button>
               ) : null}

@@ -7,9 +7,9 @@ type DetailPageLayoutProps = {
 
 export const DetailPageLayout = ({ main, aside }: DetailPageLayoutProps) => {
   return (
-    <div className="grid gap-6 xl:grid-cols-[minmax(0,1fr)_380px]">
-      <section className="min-w-0">{main}</section>
-      <aside className="min-w-0">{aside}</aside>
+    <div className="grid min-w-0 max-w-full gap-6 xl:grid-cols-[minmax(0,1fr)_minmax(320px,360px)]">
+      <section className="min-w-0 max-w-full">{main}</section>
+      <aside className="min-w-0 max-w-full">{aside}</aside>
     </div>
   );
 };

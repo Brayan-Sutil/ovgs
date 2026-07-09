@@ -26,7 +26,7 @@ export const DashboardLayout = ({
   children
 }: DashboardLayoutProps) => {
   return (
-    <div className="min-h-screen bg-surface">
+    <div className="min-h-screen overflow-x-hidden bg-surface">
       <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-line bg-white p-5 lg:block">
         <Link href="/" className="block text-lg font-bold text-ink">
           OVGS
@@ -47,11 +47,11 @@ export const DashboardLayout = ({
         </nav>
       </aside>
 
-      <div className="lg:pl-64">
-        <header className="border-b border-line bg-white px-4 py-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h1 className="text-2xl font-bold text-ink">{title}</h1>
+      <div className="min-w-0 lg:pl-64">
+        <header className="min-w-0 border-b border-line bg-white px-4 py-4 sm:px-6 lg:px-8">
+          <div className="flex min-w-0 flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div className="min-w-0">
+              <h1 className="break-words text-2xl font-bold text-ink">{title}</h1>
               {description ? <p className="mt-1 text-sm text-slate-600">{description}</p> : null}
             </div>
             {action}
@@ -69,7 +69,9 @@ export const DashboardLayout = ({
             ))}
           </nav>
         </header>
-        <main className="px-4 py-6 sm:px-6 lg:px-8">{children}</main>
+        <main className="min-w-0 max-w-full overflow-x-hidden px-4 py-6 sm:px-6 lg:px-8">
+          {children}
+        </main>
       </div>
     </div>
   );
