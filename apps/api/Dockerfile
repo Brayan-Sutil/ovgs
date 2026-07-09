@@ -18,4 +18,4 @@ RUN pnpm --filter @ovgs/api build
 
 EXPOSE 3333
 
-CMD ["pnpm", "--filter", "@ovgs/api", "start"]
+CMD ["sh", "-c", "pnpm --filter @ovgs/api db:push && pnpm --filter @ovgs/api db:seed && pnpm --filter @ovgs/api start"]
