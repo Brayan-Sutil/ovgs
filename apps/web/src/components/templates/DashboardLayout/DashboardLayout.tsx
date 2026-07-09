@@ -1,16 +1,21 @@
+"use client";
+
 import Link from "next/link";
 import { ClipboardList, CalendarDays, Package, Truck, Users } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { ReactNode } from "react";
 import clsx from "clsx";
+import { Locale, localeNames, locales } from "@/i18n/messages";
+import { useAppLocale } from "@/i18n/provider";
 
 const navigation = [
-  { href: "/", label: "Operacao", icon: ClipboardList },
-  { href: "/orders", label: "Ordens", icon: ClipboardList },
-  { href: "/scheduling", label: "Agendamento", icon: CalendarDays },
-  { href: "/customers", label: "Clientes", icon: Users },
-  { href: "/transport-types", label: "Transportes", icon: Truck },
-  { href: "/items", label: "Itens", icon: Package }
-];
+  { href: "/", labelKey: "operation", icon: ClipboardList },
+  { href: "/orders", labelKey: "orders", icon: ClipboardList },
+  { href: "/scheduling", labelKey: "scheduling", icon: CalendarDays },
+  { href: "/customers", labelKey: "customers", icon: Users },
+  { href: "/transport-types", labelKey: "transportTypes", icon: Truck },
+  { href: "/items", labelKey: "items", icon: Package }
+] as const;
 
 type DashboardLayoutProps = {
   title: string;
@@ -25,6 +30,10 @@ export const DashboardLayout = ({
   action,
   children
 }: DashboardLayoutProps) => {
+  const tLanguage = useTranslations("language");
+  const tNav = useTranslations("nav");
+  const { locale, setLocale } = useAppLocale();
+
   return (
     <div className="min-h-screen overflow-x-hidden bg-surface">
       <aside className="fixed inset-y-0 left-0 hidden w-64 border-r border-line bg-white p-5 lg:block">
@@ -41,7 +50,7 @@ export const DashboardLayout = ({
               )}
             >
               <item.icon size={17} aria-hidden />
-              {item.label}
+              {tNav(item.labelKey)}
             </Link>
           ))}
         </nav>
@@ -54,7 +63,23 @@ export const DashboardLayout = ({
               <h1 className="break-words text-2xl font-bold text-ink">{title}</h1>
               {description ? <p className="mt-1 text-sm text-slate-600">{description}</p> : null}
             </div>
-            {action}
+            <div className="flex flex-wrap items-center gap-3">
+              <label className="flex items-center gap-2 text-sm font-medium text-slate-700">
+                <span>{tLanguage("label")}</span>
+                <select
+                  value={locale}
+                  onChange={(event) => setLocale(event.target.value as Locale)}
+                  className="h-9 rounded-md border border-line bg-white px-2 text-sm text-ink outline-none transition focus:border-brand focus:ring-2 focus:ring-teal-100"
+                >
+                  {locales.map((availableLocale) => (
+                    <option key={availableLocale} value={availableLocale}>
+                      {localeNames[availableLocale]}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              {action}
+            </div>
           </div>
           <nav className="mt-4 flex gap-2 overflow-x-auto lg:hidden">
             {navigation.map((item) => (
@@ -64,7 +89,7 @@ export const DashboardLayout = ({
                 className="inline-flex h-9 shrink-0 items-center gap-2 rounded-md border border-line bg-white px-3 text-sm font-medium"
               >
                 <item.icon size={16} aria-hidden />
-                {item.label}
+                {tNav(item.labelKey)}
               </Link>
             ))}
           </nav>

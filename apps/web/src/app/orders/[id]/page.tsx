@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { AuditTimeline } from "@/components/organisms/AuditTimeline";
 import { OrderDetailsPanel } from "@/components/organisms/OrderDetailsPanel";
 import { ScheduleForm } from "@/components/organisms/ScheduleForm";
@@ -8,22 +9,23 @@ import { DetailPageLayout } from "@/components/templates/DetailPageLayout";
 import { useSalesOrder, useSalesOrderAuditEvents } from "@/features/sales-orders/hooks";
 
 const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
+  const tOrders = useTranslations("orders");
   const orderQuery = useSalesOrder(params.id);
   const auditQuery = useSalesOrderAuditEvents(params.id);
 
   if (orderQuery.isLoading) {
     return (
-      <DashboardLayout title="Ordem de Venda">
-        <div className="rounded-md border border-line bg-white p-5 text-sm">Carregando ordem...</div>
+      <DashboardLayout title={tOrders("salesOrder")}>
+        <div className="rounded-md border border-line bg-white p-5 text-sm">{tOrders("loadingOne")}</div>
       </DashboardLayout>
     );
   }
 
   if (!orderQuery.data) {
     return (
-      <DashboardLayout title="Ordem de Venda">
+      <DashboardLayout title={tOrders("salesOrder")}>
         <div className="rounded-md border border-line bg-white p-5 text-sm text-danger">
-          Ordem nao encontrada.
+          {tOrders("notFound")}
         </div>
       </DashboardLayout>
     );
@@ -32,7 +34,7 @@ const OrderDetailsPage = ({ params }: { params: { id: string } }) => {
   return (
     <DashboardLayout
       title={orderQuery.data.code}
-      description="Detalhe, status, agendamento, transporte e auditoria."
+      description={tOrders("detailsDescription")}
     >
       <DetailPageLayout
         main={<OrderDetailsPanel order={orderQuery.data} />}

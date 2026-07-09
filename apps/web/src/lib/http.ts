@@ -15,7 +15,7 @@ export class ApiError extends Error {
 const getApiErrorPayload = (payload: unknown) => {
   if (!payload || typeof payload !== "object" || !("error" in payload)) {
     return {
-      message: "Nao foi possivel concluir a operacao",
+      message: "Request failed",
       fields: []
     };
   }
@@ -31,7 +31,7 @@ const getApiErrorPayload = (payload: unknown) => {
 
   if (!error || typeof error !== "object") {
     return {
-      message: "Nao foi possivel concluir a operacao",
+      message: "Request failed",
       fields: []
     };
   }
@@ -43,7 +43,7 @@ const getApiErrorPayload = (payload: unknown) => {
       ? message.join("\n")
       : typeof message === "string"
         ? message
-        : "Nao foi possivel concluir a operacao",
+        : "Request failed",
     fields: Array.isArray(fields)
       ? fields.filter((field): field is string => typeof field === "string")
       : []

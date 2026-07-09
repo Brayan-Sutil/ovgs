@@ -1,17 +1,21 @@
 import type { Metadata } from "next";
+import { NextIntlClientProvider } from "next-intl";
 import "./globals.css";
+import { defaultLocale, messages } from "@/i18n/messages";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "OVGS",
-  description: "Sistema de Gestao de Ordens de Venda"
+  title: messages[defaultLocale].metadata.title,
+  description: messages[defaultLocale].metadata.description
 };
 
 const RootLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <html lang="pt-BR">
+    <html lang={defaultLocale}>
       <body>
-        <Providers>{children}</Providers>
+        <NextIntlClientProvider locale={defaultLocale} messages={messages[defaultLocale]}>
+          <Providers>{children}</Providers>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

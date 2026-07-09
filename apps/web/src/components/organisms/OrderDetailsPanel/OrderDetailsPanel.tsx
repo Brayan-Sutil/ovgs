@@ -1,6 +1,7 @@
 "use client";
 
 import { ArrowRight, Truck } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 import { Button } from "@/components/atoms/Button";
 import { Select } from "@/components/atoms/Select";
@@ -12,8 +13,17 @@ import {
   useUpdateSalesOrderTransport
 } from "@/features/sales-orders/hooks";
 import { SalesOrder } from "@/features/sales-orders/types";
+import { formatDate } from "@/i18n/format";
+import { useAppLocale } from "@/i18n/provider";
 
 export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
+  const tItems = useTranslations("items");
+  const tOrders = useTranslations("orders");
+  const tOrderForm = useTranslations("orderForm");
+  const tStatus = useTranslations("status");
+  const { locale } = useAppLocale();
   const updateStatus = useUpdateSalesOrderStatus(order.id);
   const updateTransport = useUpdateSalesOrderTransport(order.id);
   const [transportTypeId, setTransportTypeId] = useState(order.transportTypeId);
@@ -32,7 +42,7 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
     try {
       await updateStatus.mutateAsync(order.nextStatus);
     } catch (error) {
-      setStatusError(error instanceof Error ? error.message : "Nao foi possivel atualizar o status.");
+      setStatusError(tErrors("updateStatus"));
     }
   };
 
@@ -41,7 +51,7 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
     try {
       await updateTransport.mutateAsync(transportTypeId);
     } catch (error) {
-      setTransportError(error instanceof Error ? error.message : "Nao foi possivel alterar o transporte.");
+      setTransportError(tErrors("updateTransport"));
     }
   };
 
@@ -50,7 +60,7 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
       <section className="min-w-0 rounded-md border border-line bg-white p-5">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div className="min-w-0">
-            <div className="text-sm font-medium text-slate-500">Ordem de Venda</div>
+            <div className="text-sm font-medium text-slate-500">{tOrders("salesOrder")}</div>
             <h2 className="break-words text-2xl font-bold text-ink">{order.code}</h2>
           </div>
           <StatusBadge status={order.status} />
@@ -58,21 +68,21 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
 
         <dl className="mt-6 grid min-w-0 gap-4 sm:grid-cols-2">
           <div className="min-w-0">
-            <dt className="text-xs uppercase text-slate-500">Cliente</dt>
+            <dt className="text-xs uppercase text-slate-500">{tOrders("customer")}</dt>
             <dd className="mt-1 break-words text-sm font-semibold text-ink">{order.customer.name}</dd>
           </div>
           <div className="min-w-0">
-            <dt className="text-xs uppercase text-slate-500">Transporte atual</dt>
+            <dt className="text-xs uppercase text-slate-500">{tOrders("currentTransport")}</dt>
             <dd className="mt-1 break-words text-sm font-semibold text-ink">{order.transportType.name}</dd>
           </div>
           <div className="min-w-0">
-            <dt className="text-xs uppercase text-slate-500">Data de entrega</dt>
+            <dt className="text-xs uppercase text-slate-500">{tOrders("deliveryDate")}</dt>
             <dd className="mt-1 text-sm font-semibold text-ink">
-              {order.deliveryDate ? new Date(order.deliveryDate).toLocaleDateString("pt-BR") : "-"}
+              {order.deliveryDate ? formatDate(order.deliveryDate, locale) : tCommon("notAvailable")}
             </dd>
           </div>
           <div className="min-w-0">
-            <dt className="text-xs uppercase text-slate-500">Janela</dt>
+            <dt className="text-xs uppercase text-slate-500">{tOrders("window")}</dt>
             <dd className="mt-1 text-sm font-semibold text-ink">
               {order.deliveryWindowStart && order.deliveryWindowEnd
                 ? `${order.deliveryWindowStart} - ${order.deliveryWindowEnd}`
@@ -83,14 +93,14 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
       </section>
 
       <section className="min-w-0 rounded-md border border-line bg-white p-5">
-        <h3 className="text-base font-semibold text-ink">Itens</h3>
+        <h3 className="text-base font-semibold text-ink">{tItems("title")}</h3>
         <div className="mt-4 overflow-x-auto rounded-md border border-line">
           <table className="w-full min-w-[520px] text-left text-sm">
             <thead className="bg-surface text-xs uppercase text-slate-500">
               <tr>
                 <th className="px-3 py-2">SKU</th>
-                <th className="px-3 py-2">Item</th>
-                <th className="px-3 py-2">Qtd.</th>
+                <th className="px-3 py-2">{tItems("item")}</th>
+                <th className="px-3 py-2">{tOrderForm("shortQuantity")}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-line">
@@ -108,9 +118,9 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
 
       {order.nextStatus ? (
         <ConfirmDialog
-          title={`Avancar para ${order.nextStatus.replace("_", " ")}`}
-          description="A transicao sera validada pela API antes de persistir a alteracao."
-          confirmLabel="Avancar status"
+          title={tOrders("advanceTo", { status: tStatus(order.nextStatus) })}
+          description={tOrders("transitionDescription")}
+          confirmLabel={tOrders("advanceStatus")}
           loading={updateStatus.isPending}
           onConfirm={advanceStatus}
         />
@@ -123,10 +133,10 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
       <section className="min-w-0 rounded-md border border-line bg-white p-5">
         <h3 className="flex items-center gap-2 text-base font-semibold text-ink">
           <Truck size={18} aria-hidden />
-          Transporte
+          {tOrders("transport")}
         </h3>
         <div className="mt-4 grid min-w-0 gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
-          <FormField label="Tipo autorizado" error={transportError ?? undefined}>
+          <FormField label={tOrders("authorizedType")} error={transportError ?? undefined}>
             <Select
               aria-invalid={Boolean(transportError)}
               value={transportTypeId}
@@ -150,7 +160,7 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
               onClick={changeTransport}
             >
               <ArrowRight size={16} aria-hidden />
-              Alterar
+              {tOrders("change")}
             </Button>
           </div>
         </div>

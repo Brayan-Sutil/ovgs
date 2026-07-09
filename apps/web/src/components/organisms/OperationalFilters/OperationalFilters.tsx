@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { Select } from "@/components/atoms/Select";
@@ -26,33 +27,36 @@ type OperationalFiltersProps = {
 };
 
 export const OperationalFilters = ({ customers, transportTypes }: OperationalFiltersProps) => {
+  const tCommon = useTranslations("common");
+  const tFilters = useTranslations("filters");
+  const tStatus = useTranslations("status");
   const dispatch = useAppDispatch();
   const filters = useAppSelector((state) => state.salesOrdersFilters);
 
   return (
     <div className="grid gap-4 rounded-md border border-line bg-white p-5 md:grid-cols-2 xl:grid-cols-6">
-      <FormField label="Status">
+      <FormField label={tFilters("status")}>
         <Select
           value={filters.status ?? ""}
           onChange={(event) =>
             dispatch(setStatus((event.target.value || undefined) as SalesOrderStatus | undefined))
           }
         >
-          <option value="">Todos</option>
+          <option value="">{tCommon("all")}</option>
           {salesOrderStatuses.map((status) => (
             <option key={status} value={status}>
-              {status.replace("_", " ")}
+              {tStatus(status)}
             </option>
           ))}
         </Select>
       </FormField>
 
-      <FormField label="Cliente">
+      <FormField label={tFilters("customer")}>
         <Select
           value={filters.customerId ?? ""}
           onChange={(event) => dispatch(setCustomerId(event.target.value || undefined))}
         >
-          <option value="">Todos</option>
+          <option value="">{tCommon("all")}</option>
           {customers.map((customer) => (
             <option key={customer.id} value={customer.id}>
               {customer.name}
@@ -61,12 +65,12 @@ export const OperationalFilters = ({ customers, transportTypes }: OperationalFil
         </Select>
       </FormField>
 
-      <FormField label="Transporte">
+      <FormField label={tFilters("transport")}>
         <Select
           value={filters.transportTypeId ?? ""}
           onChange={(event) => dispatch(setTransportTypeId(event.target.value || undefined))}
         >
-          <option value="">Todos</option>
+          <option value="">{tCommon("all")}</option>
           {transportTypes.map((transportType) => (
             <option key={transportType.id} value={transportType.id}>
               {transportType.name}
@@ -75,7 +79,7 @@ export const OperationalFilters = ({ customers, transportTypes }: OperationalFil
         </Select>
       </FormField>
 
-      <FormField label="Data inicial">
+      <FormField label={tFilters("dateFrom")}>
         <Input
           type="date"
           value={filters.dateFrom ?? ""}
@@ -83,7 +87,7 @@ export const OperationalFilters = ({ customers, transportTypes }: OperationalFil
         />
       </FormField>
 
-      <FormField label="Data final">
+      <FormField label={tFilters("dateTo")}>
         <Input
           type="date"
           value={filters.dateTo ?? ""}
@@ -93,7 +97,7 @@ export const OperationalFilters = ({ customers, transportTypes }: OperationalFil
 
       <div className="flex items-end">
         <Button variant="secondary" className="w-full" onClick={() => dispatch(clearFilters())}>
-          Limpar
+          {tCommon("clear")}
         </Button>
       </div>
     </div>

@@ -3,6 +3,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/atoms/Button";
@@ -13,9 +14,11 @@ import { useCustomers } from "@/features/customers/hooks";
 import { useItems } from "@/features/items/hooks";
 import { useCreateSalesOrder } from "@/features/sales-orders/hooks";
 import {
-  salesOrderFormSchema,
+  createSalesOrderFormSchema,
   SalesOrderFormValues
 } from "@/features/sales-orders/schemas";
+import { messages } from "@/i18n/messages";
+import { useAppLocale } from "@/i18n/provider";
 import { setFormApiError } from "@/lib/form-errors";
 
 type SelectedItem = {
@@ -26,11 +29,19 @@ type SelectedItem = {
 };
 
 export const OrderForm = () => {
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
+  const tOrderForm = useTranslations("orderForm");
   const router = useRouter();
+  const { locale } = useAppLocale();
   const customersQuery = useCustomers();
   const itemsQuery = useItems();
   const createOrder = useCreateSalesOrder();
   const [selectedItems, setSelectedItems] = useState<SelectedItem[]>([]);
+  const formSchema = useMemo(
+    () => createSalesOrderFormSchema(messages[locale].validation),
+    [locale]
+  );
 
   const {
     register,
@@ -41,7 +52,7 @@ export const OrderForm = () => {
     clearErrors,
     formState: { errors }
   } = useForm<SalesOrderFormValues>({
-    resolver: zodResolver(salesOrderFormSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: {
       customerId: "",
       transportTypeId: "",
@@ -80,7 +91,7 @@ export const OrderForm = () => {
     if (!item) {
       setError("itemId", {
         type: "manual",
-        message: "Selecione um item"
+        message: messages[locale].validation.selectItem
       });
       return;
     }
@@ -88,7 +99,7 @@ export const OrderForm = () => {
     if (!quantity || quantity < 1) {
       setError("quantity", {
         type: "manual",
-        message: "Informe uma quantidade valida"
+        message: messages[locale].validation.invalidQuantity
       });
       return;
     }
@@ -115,7 +126,7 @@ export const OrderForm = () => {
     if (selectedItems.length === 0) {
       setError("itemId", {
         type: "manual",
-        message: "Adicione ao menos um item a Ordem de Venda."
+        message: tErrors("noOrderItems")
       });
       return;
     }
@@ -127,7 +138,7 @@ export const OrderForm = () => {
     if (!isAuthorized) {
       setError("transportTypeId", {
         type: "manual",
-        message: "Tipo de transporte nao autorizado para o cliente selecionado."
+        message: tErrors("unauthorizedTransport")
       });
       return;
     }
@@ -145,15 +156,15 @@ export const OrderForm = () => {
     } catch (error) {
       setFormApiError<SalesOrderFormValues>({
         error,
-        fallback: "Nao foi possivel criar a ordem.",
+        fallback: tErrors("createOrder"),
         fieldMap: {
           customerId: {
             field: "customerId",
-            message: "Cliente invalido."
+            message: tErrors("invalidCustomer")
           },
           transportTypeId: {
             field: "transportTypeId",
-            message: "Tipo de transporte invalido."
+            message: tErrors("invalidTransportType")
           }
         },
         setError
@@ -168,14 +179,14 @@ export const OrderForm = () => {
       className="grid gap-5 rounded-md border border-line bg-white p-5"
     >
       <div>
-        <h2 className="text-lg font-semibold text-ink">Nova Ordem de Venda</h2>
-        <p className="mt-1 text-sm text-slate-600">Cliente, transporte autorizado e itens cadastrados.</p>
+        <h2 className="text-lg font-semibold text-ink">{tOrderForm("title")}</h2>
+        <p className="mt-1 text-sm text-slate-600">{tOrderForm("description")}</p>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2">
-        <FormField label="Cliente" error={errors.customerId?.message}>
+        <FormField label={tOrderForm("customer")} error={errors.customerId?.message}>
           <Select {...register("customerId")}>
-            <option value="">Selecione</option>
+            <option value="">{tCommon("select")}</option>
             {customersQuery.data?.map((customer) => (
               <option key={customer.id} value={customer.id}>
                 {customer.name}
@@ -184,9 +195,9 @@ export const OrderForm = () => {
           </Select>
         </FormField>
 
-        <FormField label="Tipo de transporte" error={errors.transportTypeId?.message}>
+        <FormField label={tOrderForm("transportType")} error={errors.transportTypeId?.message}>
           <Select {...register("transportTypeId")} disabled={!selectedCustomer}>
-            <option value="">Selecione</option>
+            <option value="">{tCommon("select")}</option>
             {authorizedTransportTypes.map((transportType) => (
               <option key={transportType.id} value={transportType.id}>
                 {transportType.name}
@@ -197,9 +208,9 @@ export const OrderForm = () => {
       </div>
 
       <div className="grid gap-4 rounded-md border border-line p-4 md:grid-cols-[minmax(0,1fr)_160px_auto]">
-        <FormField label="Item" error={errors.itemId?.message}>
+        <FormField label={tOrderForm("item")} error={errors.itemId?.message}>
           <Select {...register("itemId")}>
-            <option value="">Selecione</option>
+            <option value="">{tCommon("select")}</option>
             {itemsQuery.data?.map((item) => (
               <option key={item.id} value={item.id}>
                 {item.sku} - {item.name}
@@ -208,14 +219,14 @@ export const OrderForm = () => {
           </Select>
         </FormField>
 
-        <FormField label="Quantidade" error={errors.quantity?.message}>
+        <FormField label={tOrderForm("quantity")} error={errors.quantity?.message}>
           <Input type="number" min={1} {...register("quantity")} />
         </FormField>
 
         <div className="flex items-end">
           <Button type="button" variant="secondary" onClick={addItem}>
             <Plus size={16} aria-hidden />
-            Adicionar
+            {tOrderForm("add")}
           </Button>
         </div>
       </div>
@@ -226,8 +237,8 @@ export const OrderForm = () => {
             <thead className="bg-surface text-xs uppercase text-slate-500">
               <tr>
                 <th className="px-3 py-2">SKU</th>
-                <th className="px-3 py-2">Item</th>
-                <th className="px-3 py-2">Qtd.</th>
+                <th className="px-3 py-2">{tOrderForm("item")}</th>
+                <th className="px-3 py-2">{tOrderForm("shortQuantity")}</th>
                 <th className="px-3 py-2"></th>
               </tr>
             </thead>
@@ -246,7 +257,7 @@ export const OrderForm = () => {
                           currentItems.filter((currentItem) => currentItem.itemId !== item.itemId)
                         )
                       }
-                      aria-label="Remover item"
+                      aria-label={tOrderForm("removeItem")}
                     >
                       <Trash2 size={16} aria-hidden />
                     </button>
@@ -266,7 +277,7 @@ export const OrderForm = () => {
 
       <div className="flex justify-end">
         <Button type="submit" disabled={createOrder.isPending}>
-          {createOrder.isPending ? "Criando..." : "Criar Ordem de Venda"}
+          {createOrder.isPending ? tOrderForm("creating") : tOrderForm("create")}
         </Button>
       </div>
     </form>

@@ -1,11 +1,16 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { OrderForm } from "@/components/organisms/OrderForm";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
 
 const NewOrderPage = () => {
+  const tOrders = useTranslations("orders");
+
   return (
     <DashboardLayout
-      title="Criar Ordem de Venda"
-      description="Associacao de cliente, transporte autorizado e itens cadastrados."
+      title={tOrders("createTitle")}
+      description={tOrders("createDescription")}
     >
       <OrderForm />
     </DashboardLayout>

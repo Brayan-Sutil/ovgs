@@ -1,3 +1,6 @@
+"use client";
+
+import { useTranslations } from "next-intl";
 import { Badge } from "@/components/atoms/Badge";
 import { SalesOrderStatus } from "@/features/sales-orders/types";
 
@@ -10,5 +13,7 @@ const statusTone: Record<SalesOrderStatus, "neutral" | "success" | "warning" | "
 };
 
 export const StatusBadge = ({ status }: { status: SalesOrderStatus }) => {
-  return <Badge tone={statusTone[status]}>{status.replace("_", " ")}</Badge>;
+  const tStatus = useTranslations("status");
+
+  return <Badge tone={statusTone[status]}>{tStatus(status)}</Badge>;
 };

@@ -1,9 +1,16 @@
 import { z } from "zod";
+import { defaultLocale, messages } from "@/i18n/messages";
 
-export const itemFormSchema = z.object({
-  sku: z.string().trim().min(2, "Informe ao menos 2 caracteres"),
-  name: z.string().trim().min(2, "Informe ao menos 2 caracteres"),
-  description: z.string().trim().optional()
-});
+type ValidationMessages = (typeof messages)[typeof defaultLocale]["validation"];
+
+export const createItemFormSchema = (validation: ValidationMessages) => {
+  return z.object({
+    sku: z.string().trim().min(2, validation.minTwoCharacters),
+    name: z.string().trim().min(2, validation.minTwoCharacters),
+    description: z.string().trim().optional()
+  });
+};
+
+export const itemFormSchema = createItemFormSchema(messages[defaultLocale].validation);
 
 export type ItemFormValues = z.infer<typeof itemFormSchema>;

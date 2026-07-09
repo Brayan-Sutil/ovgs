@@ -1,6 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useTranslations } from "next-intl";
+import { useMemo } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
@@ -8,7 +10,9 @@ import { FormField } from "@/components/molecules/FormField";
 import { CrudPageLayout } from "@/components/templates/CrudPageLayout";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { useCreateItem, useItems } from "@/features/items/hooks";
-import { itemFormSchema, ItemFormValues } from "@/features/items/schemas";
+import { createItemFormSchema, ItemFormValues } from "@/features/items/schemas";
+import { messages } from "@/i18n/messages";
+import { useAppLocale } from "@/i18n/provider";
 import { setFormApiError } from "@/lib/form-errors";
 
 const emptyForm: ItemFormValues = {
@@ -18,8 +22,13 @@ const emptyForm: ItemFormValues = {
 };
 
 const ItemsPage = () => {
+  const tCommon = useTranslations("common");
+  const tErrors = useTranslations("errors");
+  const tItems = useTranslations("items");
+  const { locale } = useAppLocale();
   const itemsQuery = useItems();
   const createItem = useCreateItem();
+  const formSchema = useMemo(() => createItemFormSchema(messages[locale].validation), [locale]);
   const {
     register,
     handleSubmit,
@@ -28,7 +37,7 @@ const ItemsPage = () => {
     clearErrors,
     formState: { errors }
   } = useForm<ItemFormValues>({
-    resolver: zodResolver(itemFormSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: emptyForm
   });
 
@@ -44,11 +53,11 @@ const ItemsPage = () => {
     } catch (error) {
       setFormApiError<ItemFormValues>({
         error,
-        fallback: "Nao foi possivel criar o item.",
+        fallback: tErrors("createItem"),
         fieldMap: {
           sku: {
             field: "sku",
-            message: "SKU ja cadastrado."
+            message: tErrors("duplicateSku")
           }
         },
         setError
@@ -57,18 +66,18 @@ const ItemsPage = () => {
   };
 
   return (
-    <DashboardLayout title="Itens" description="Cadastro e consulta de itens por SKU.">
+    <DashboardLayout title={tItems("title")} description={tItems("description")}>
       <CrudPageLayout
         form={
           <form noValidate onSubmit={handleSubmit(submit)} className="grid gap-4">
-            <h2 className="text-base font-semibold text-ink">Novo item</h2>
-            <FormField label="SKU" error={errors.sku?.message}>
+            <h2 className="text-base font-semibold text-ink">{tItems("new")}</h2>
+            <FormField label={tItems("sku")} error={errors.sku?.message}>
               <Input aria-invalid={Boolean(errors.sku)} {...register("sku")} />
             </FormField>
-            <FormField label="Nome" error={errors.name?.message}>
+            <FormField label={tItems("name")} error={errors.name?.message}>
               <Input aria-invalid={Boolean(errors.name)} {...register("name")} />
             </FormField>
-            <FormField label="Descricao" error={errors.description?.message}>
+            <FormField label={tItems("descriptionField")} error={errors.description?.message}>
               <Input aria-invalid={Boolean(errors.description)} {...register("description")} />
             </FormField>
             {errors.root?.server?.message ? (
@@ -77,20 +86,20 @@ const ItemsPage = () => {
               </div>
             ) : null}
             <Button type="submit" disabled={createItem.isPending}>
-              Salvar
+              {tCommon("save")}
             </Button>
           </form>
         }
         list={
           <div>
-            <h2 className="text-base font-semibold text-ink">Itens cadastrados</h2>
+            <h2 className="text-base font-semibold text-ink">{tItems("registered")}</h2>
             <div className="mt-4 overflow-x-auto">
               <table className="w-full min-w-[560px] text-left text-sm">
                 <thead className="bg-surface text-xs uppercase text-slate-500">
                   <tr>
-                    <th className="px-3 py-2">SKU</th>
-                    <th className="px-3 py-2">Nome</th>
-                    <th className="px-3 py-2">Descricao</th>
+                    <th className="px-3 py-2">{tItems("sku")}</th>
+                    <th className="px-3 py-2">{tItems("name")}</th>
+                    <th className="px-3 py-2">{tItems("descriptionField")}</th>
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-line">

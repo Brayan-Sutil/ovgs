@@ -1,7 +1,8 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
+import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
@@ -9,9 +10,11 @@ import { FormField } from "@/components/molecules/FormField";
 import { CrudPageLayout } from "@/components/templates/CrudPageLayout";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { useCreateCustomer, useCustomers, useUpdateCustomer } from "@/features/customers/hooks";
-import { customerFormSchema, CustomerFormValues } from "@/features/customers/schemas";
+import { createCustomerFormSchema, CustomerFormValues } from "@/features/customers/schemas";
 import { Customer } from "@/features/sales-orders/types";
 import { useTransportTypes } from "@/features/transport-types/hooks";
+import { messages } from "@/i18n/messages";
+import { useAppLocale } from "@/i18n/provider";
 import { setFormApiError } from "@/lib/form-errors";
 
 const emptyForm: CustomerFormValues = {
@@ -22,11 +25,19 @@ const emptyForm: CustomerFormValues = {
 };
 
 const CustomersPage = () => {
+  const tCommon = useTranslations("common");
+  const tCustomers = useTranslations("customers");
+  const tErrors = useTranslations("errors");
+  const { locale } = useAppLocale();
   const customersQuery = useCustomers();
   const transportTypesQuery = useTransportTypes();
   const createCustomer = useCreateCustomer();
   const updateCustomer = useUpdateCustomer();
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
+  const formSchema = useMemo(
+    () => createCustomerFormSchema(messages[locale].validation),
+    [locale]
+  );
   const {
     register,
     handleSubmit,
@@ -35,7 +46,7 @@ const CustomersPage = () => {
     clearErrors,
     formState: { errors }
   } = useForm<CustomerFormValues>({
-    resolver: zodResolver(customerFormSchema),
+    resolver: zodResolver(formSchema),
     defaultValues: emptyForm
   });
 
@@ -77,11 +88,11 @@ const CustomersPage = () => {
     } catch (error) {
       setFormApiError<CustomerFormValues>({
         error,
-        fallback: "Nao foi possivel salvar o cliente.",
+        fallback: tErrors("saveCustomer"),
         fieldMap: {
           document: {
             field: "document",
-            message: "Documento ja cadastrado."
+            message: tErrors("duplicateDocument")
           }
         },
         setError
@@ -96,24 +107,24 @@ const CustomersPage = () => {
   };
 
   return (
-    <DashboardLayout title="Clientes" description="Cadastro, consulta e edicao de clientes.">
+    <DashboardLayout title={tCustomers("title")} description={tCustomers("description")}>
       <CrudPageLayout
         form={
           <form noValidate onSubmit={handleSubmit(submit)} className="grid gap-4">
             <h2 className="text-base font-semibold text-ink">
-              {editingCustomer ? "Editar cliente" : "Novo cliente"}
+              {editingCustomer ? tCustomers("edit") : tCustomers("new")}
             </h2>
-            <FormField label="Nome" error={errors.name?.message}>
+            <FormField label={tCustomers("name")} error={errors.name?.message}>
               <Input aria-invalid={Boolean(errors.name)} {...register("name")} />
             </FormField>
-            <FormField label="Documento" error={errors.document?.message}>
+            <FormField label={tCustomers("document")} error={errors.document?.message}>
               <Input aria-invalid={Boolean(errors.document)} {...register("document")} />
             </FormField>
-            <FormField label="E-mail" error={errors.email?.message}>
+            <FormField label={tCustomers("email")} error={errors.email?.message}>
               <Input type="email" aria-invalid={Boolean(errors.email)} {...register("email")} />
             </FormField>
             <div className="grid gap-2">
-              <div className="text-sm font-medium text-ink">Transportes autorizados</div>
+              <div className="text-sm font-medium text-ink">{tCustomers("authorizedTransports")}</div>
               {transportTypesQuery.data?.map((transportType) => (
                 <label key={transportType.id} className="flex items-center gap-2 text-sm text-slate-700">
                   <input
@@ -137,11 +148,11 @@ const CustomersPage = () => {
             ) : null}
             <div className="flex gap-2">
               <Button type="submit" disabled={createCustomer.isPending || updateCustomer.isPending}>
-                Salvar
+                {tCommon("save")}
               </Button>
               {editingCustomer ? (
                 <Button type="button" variant="secondary" onClick={cancelEdit}>
-                  Cancelar
+                  {tCommon("cancel")}
                 </Button>
               ) : null}
             </div>
@@ -149,14 +160,14 @@ const CustomersPage = () => {
         }
         list={
           <div>
-            <h2 className="text-base font-semibold text-ink">Clientes cadastrados</h2>
+            <h2 className="text-base font-semibold text-ink">{tCustomers("registered")}</h2>
             <div className="mt-4 overflow-x-auto">
               <table className="w-full min-w-[640px] text-left text-sm">
                 <thead className="bg-surface text-xs uppercase text-slate-500">
                   <tr>
-                    <th className="px-3 py-2">Nome</th>
-                    <th className="px-3 py-2">Documento</th>
-                    <th className="px-3 py-2">Transportes</th>
+                    <th className="px-3 py-2">{tCustomers("name")}</th>
+                    <th className="px-3 py-2">{tCustomers("document")}</th>
+                    <th className="px-3 py-2">{tCustomers("transports")}</th>
                     <th className="px-3 py-2"></th>
                   </tr>
                 </thead>
@@ -172,7 +183,7 @@ const CustomersPage = () => {
                       </td>
                       <td className="px-3 py-2 text-right">
                         <Button variant="secondary" onClick={() => setEditingCustomer(customer)}>
-                          Editar
+                          {tCommon("edit")}
                         </Button>
                       </td>
                     </tr>

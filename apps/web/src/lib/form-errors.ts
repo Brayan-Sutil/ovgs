@@ -23,7 +23,7 @@ export const setFormApiError = <TValues extends FieldValues>({
   fieldMap = {},
   setError
 }: SetFormApiErrorParams<TValues>) => {
-  const message = getFormErrorMessage(error, fallback);
+  const message = error instanceof ApiError ? fallback : getFormErrorMessage(error, fallback);
 
   if (error instanceof ApiError) {
     const fieldError = error.fields

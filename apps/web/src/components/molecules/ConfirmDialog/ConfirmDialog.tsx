@@ -1,6 +1,7 @@
 "use client";
 
 import { AlertTriangle } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { Button } from "@/components/atoms/Button";
 
 type ConfirmDialogProps = {
@@ -18,6 +19,8 @@ export const ConfirmDialog = ({
   loading,
   onConfirm
 }: ConfirmDialogProps) => {
+  const tCommon = useTranslations("common");
+
   return (
     <div className="rounded-md border border-line bg-white p-4">
       <div className="flex items-start gap-3">
@@ -28,7 +31,7 @@ export const ConfirmDialog = ({
           <h3 className="text-sm font-semibold text-ink">{title}</h3>
           <p className="mt-1 text-sm text-slate-600">{description}</p>
           <Button className="mt-3" disabled={loading} onClick={onConfirm}>
-            {loading ? "Processando..." : confirmLabel}
+            {loading ? tCommon("processing") : confirmLabel}
           </Button>
         </div>
       </div>
