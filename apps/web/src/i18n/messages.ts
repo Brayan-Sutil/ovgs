@@ -7,9 +7,9 @@ export type Locale = (typeof locales)[number];
 export const defaultLocale: Locale = "pt";
 
 export const localeNames: Record<Locale, string> = {
-  pt: "Portugues",
+  pt: "Português",
   en: "English",
-  es: "Espanol"
+  es: "Español"
 };
 
 export const dateLocales: Record<Locale, string> = {
@@ -26,10 +26,28 @@ export const messages = {
   pt: {
     metadata: {
       title: "OVGS",
-      description: "Sistema de Gestao de Ordens de Venda"
+      description: "Sistema de Gestão de Ordens de Venda"
     },
     language: {
       label: "Idioma"
+    },
+    auth: {
+      loginTitle: "Entrar no OVGS",
+      loginDescription: "Escolha uma visão para acessar a demonstração.",
+      chooseProfile: "Perfis disponíveis",
+      companyAccess: "Entrar como empresa",
+      companyDescription: "Acesso administrativo completo para operação, cadastros e gestão das ordens.",
+      customerAccess: "Entrar como cliente",
+      customerDescription: "Portal simples para consultar ordens, status, itens e previsão de entrega.",
+      loadingCustomers: "Carregando clientes...",
+      selectCustomer: "Escolha o cliente",
+      continueAsCustomer: "Continuar como cliente",
+      noCustomers: "Ainda não há clientes cadastrados. Entre como empresa para cadastrar o primeiro cliente.",
+      customerUnavailable: "Não foi possível carregar os clientes agora. Entre como empresa para revisar o cadastro.",
+      signedInAs: "Perfil",
+      customerReadOnly: "Visão do cliente",
+      customerReadOnlyDescription: "Este perfil acompanha as ordens da Acme Distribuidora sem alterar dados operacionais.",
+      logout: "Sair"
     },
     common: {
       all: "Todos",
@@ -46,7 +64,7 @@ export const messages = {
       notAvailable: "-"
     },
     nav: {
-      operation: "Operacao",
+      operation: "Operação",
       orders: "Ordens",
       scheduling: "Agendamento",
       customers: "Clientes",
@@ -69,50 +87,50 @@ export const messages = {
     },
     validation: {
       minTwoCharacters: "Informe ao menos 2 caracteres",
-      invalidDocument: "Informe um documento valido",
-      invalidEmail: "Informe um e-mail valido",
-      invalidQuantity: "Informe uma quantidade valida",
+      invalidDocument: "Informe um documento válido",
+      invalidEmail: "Informe um e-mail válido",
+      invalidQuantity: "Informe uma quantidade válida",
       selectCustomer: "Selecione um cliente",
       selectTransportType: "Selecione um tipo de transporte",
       selectItem: "Selecione um item",
       deliveryDateRequired: "Informe a data de entrega",
-      invalidTime: "Horario invalido",
+      invalidTime: "Horário inválido",
       deliveryWindowEndAfterStart: "A janela final deve ser maior que a inicial"
     },
     errors: {
-      genericOperation: "Nao foi possivel concluir a operacao",
-      saveCustomer: "Nao foi possivel salvar o cliente.",
-      duplicateDocument: "Documento ja cadastrado.",
-      createItem: "Nao foi possivel criar o item.",
-      duplicateSku: "SKU ja cadastrado.",
-      saveTransportType: "Nao foi possivel salvar o tipo de transporte.",
-      duplicateTransportName: "Nome ja cadastrado.",
-      createOrder: "Nao foi possivel criar a ordem.",
-      invalidCustomer: "Cliente invalido.",
-      invalidTransportType: "Tipo de transporte invalido.",
-      noOrderItems: "Adicione ao menos um item a Ordem de Venda.",
-      unauthorizedTransport: "Tipo de transporte nao autorizado para o cliente selecionado.",
-      updateSchedule: "Nao foi possivel atualizar o agendamento.",
-      invalidDeliveryDate: "Data de entrega invalida.",
-      invalidWindowStart: "Inicio da janela invalido.",
-      invalidWindowEnd: "Fim da janela invalido.",
-      updateStatus: "Nao foi possivel atualizar o status.",
-      updateTransport: "Nao foi possivel alterar o transporte."
+      genericOperation: "Não foi possível concluir a operação",
+      saveCustomer: "Não foi possível salvar o cliente.",
+      duplicateDocument: "Documento já cadastrado.",
+      createItem: "Não foi possível criar o item.",
+      duplicateSku: "SKU já cadastrado.",
+      saveTransportType: "Não foi possível salvar o tipo de transporte.",
+      duplicateTransportName: "Nome já cadastrado.",
+      createOrder: "Não foi possível criar a ordem.",
+      invalidCustomer: "Cliente inválido.",
+      invalidTransportType: "Tipo de transporte inválido.",
+      noOrderItems: "Adicione ao menos um item à Ordem de Venda.",
+      unauthorizedTransport: "Tipo de transporte não autorizado para o cliente selecionado.",
+      updateSchedule: "Não foi possível atualizar o agendamento.",
+      invalidDeliveryDate: "Data de entrega inválida.",
+      invalidWindowStart: "Início da janela inválido.",
+      invalidWindowEnd: "Fim da janela inválido.",
+      updateStatus: "Não foi possível atualizar o status.",
+      updateTransport: "Não foi possível alterar o transporte."
     },
     dashboard: {
       title: "Monitoramento Operacional",
-      description: "Visibilidade do ciclo logistico das Ordens de Venda."
+      description: "Visibilidade do ciclo logístico das Ordens de Venda."
     },
     orders: {
       title: "Ordens de Venda",
       description: "Consulta, filtros operacionais e acesso aos detalhes.",
       new: "Nova Ordem",
       createTitle: "Criar Ordem de Venda",
-      createDescription: "Associacao de cliente, transporte autorizado e itens cadastrados.",
+      createDescription: "Associação de cliente, transporte autorizado e itens cadastrados.",
       loading: "Carregando ordens...",
       emptyTitle: "Nenhuma Ordem de Venda encontrada",
       emptyDescription: "Ajuste os filtros ou crie uma nova Ordem de Venda.",
-      code: "Codigo",
+      code: "Código",
       customer: "Cliente",
       transport: "Transporte",
       delivery: "Entrega",
@@ -121,11 +139,11 @@ export const messages = {
       window: "Janela",
       detailsDescription: "Detalhe, status, agendamento, transporte e auditoria.",
       loadingOne: "Carregando ordem...",
-      notFound: "Ordem nao encontrada.",
+      notFound: "Ordem não encontrada.",
       salesOrder: "Ordem de Venda",
-      advanceTo: "Avancar para {status}",
-      transitionDescription: "A transicao sera validada pela API antes de persistir a alteracao.",
-      advanceStatus: "Avancar status",
+      advanceTo: "Avançar para {status}",
+      transitionDescription: "A transição será validada pela API antes de persistir a alteração.",
+      advanceStatus: "Avançar status",
       authorizedType: "Tipo autorizado",
       change: "Alterar"
     },
@@ -151,7 +169,7 @@ export const messages = {
     },
     customers: {
       title: "Clientes",
-      description: "Cadastro, consulta e edicao de clientes.",
+      description: "Cadastro, consulta e edição de clientes.",
       new: "Novo cliente",
       edit: "Editar cliente",
       name: "Nome",
@@ -168,26 +186,26 @@ export const messages = {
       registered: "Itens cadastrados",
       sku: "SKU",
       name: "Nome",
-      descriptionField: "Descricao",
+      descriptionField: "Descrição",
       item: "Item"
     },
     transportTypes: {
       title: "Tipos de Transporte",
-      description: "Cadastro, consulta e edicao das modalidades de transporte.",
+      description: "Cadastro, consulta e edição das modalidades de transporte.",
       new: "Novo transporte",
       edit: "Editar transporte",
       registered: "Transportes cadastrados",
       name: "Nome",
-      situation: "Situacao"
+      situation: "Situação"
     },
     scheduling: {
       title: "Central de Agendamento",
-      description: "Definicao de data, janela de atendimento, confirmacao e reagendamento.",
+      description: "Definição de data, janela de atendimento, confirmação e reagendamento.",
       loading: "Carregando agendamentos...",
       empty: "Nenhuma Ordem de Venda planejada para agendamento.",
       formTitle: "Agendamento",
       deliveryDate: "Data de entrega",
-      windowStart: "Inicio da janela",
+      windowStart: "Início da janela",
       windowEnd: "Fim da janela",
       confirm: "Confirmar agendamento",
       save: "Salvar agendamento"
@@ -196,7 +214,7 @@ export const messages = {
       title: "Auditoria",
       loading: "Carregando auditoria...",
       emptyTitle: "Sem eventos",
-      emptyDescription: "Esta entidade ainda nao possui eventos de auditoria.",
+      emptyDescription: "Esta entidade ainda não possui eventos de auditoria.",
       previous: "anterior",
       next: "posterior"
     }
@@ -208,6 +226,24 @@ export const messages = {
     },
     language: {
       label: "Language"
+    },
+    auth: {
+      loginTitle: "Sign in to OVGS",
+      loginDescription: "Choose a view to access the demo.",
+      chooseProfile: "Available profiles",
+      companyAccess: "Sign in as company",
+      companyDescription: "Full administrative access for operations, records and order management.",
+      customerAccess: "Sign in as customer",
+      customerDescription: "Simple portal to view orders, status, items and delivery forecast.",
+      loadingCustomers: "Loading customers...",
+      selectCustomer: "Choose the customer",
+      continueAsCustomer: "Continue as customer",
+      noCustomers: "There are no customers yet. Sign in as company to create the first customer.",
+      customerUnavailable: "Customers could not be loaded now. Sign in as company to review customer records.",
+      signedInAs: "Profile",
+      customerReadOnly: "Customer view",
+      customerReadOnlyDescription: "This profile follows Acme Distribuidora orders without changing operational data.",
+      logout: "Sign out"
     },
     common: {
       all: "All",
@@ -382,10 +418,28 @@ export const messages = {
   es: {
     metadata: {
       title: "OVGS",
-      description: "Sistema de Gestion de Ordenes de Venta"
+      description: "Sistema de Gestión de Órdenes de Venta"
     },
     language: {
       label: "Idioma"
+    },
+    auth: {
+      loginTitle: "Entrar en OVGS",
+      loginDescription: "Elija una vista para acceder a la demostración.",
+      chooseProfile: "Perfiles disponibles",
+      companyAccess: "Entrar como empresa",
+      companyDescription: "Acceso administrativo completo para operación, registros y gestión de órdenes.",
+      customerAccess: "Entrar como cliente",
+      customerDescription: "Portal simple para consultar órdenes, estado, ítems y previsión de entrega.",
+      loadingCustomers: "Cargando clientes...",
+      selectCustomer: "Elija el cliente",
+      continueAsCustomer: "Continuar como cliente",
+      noCustomers: "Aún no hay clientes registrados. Entre como empresa para registrar el primer cliente.",
+      customerUnavailable: "No fue posible cargar los clientes ahora. Entre como empresa para revisar el registro.",
+      signedInAs: "Perfil",
+      customerReadOnly: "Vista del cliente",
+      customerReadOnlyDescription: "Este perfil acompaña las órdenes de Acme Distribuidora sin alterar datos operacionales.",
+      logout: "Salir"
     },
     common: {
       all: "Todos",
@@ -402,12 +456,12 @@ export const messages = {
       notAvailable: "-"
     },
     nav: {
-      operation: "Operacion",
-      orders: "Ordenes",
+      operation: "Operación",
+      orders: "Órdenes",
       scheduling: "Agenda",
       customers: "Clientes",
       transportTypes: "Transportes",
-      items: "Items"
+      items: "Ítems"
     },
     status: {
       CRIADA: "Creada",
@@ -425,76 +479,76 @@ export const messages = {
     },
     validation: {
       minTwoCharacters: "Ingrese al menos 2 caracteres",
-      invalidDocument: "Ingrese un documento valido",
-      invalidEmail: "Ingrese un e-mail valido",
-      invalidQuantity: "Ingrese una cantidad valida",
+      invalidDocument: "Ingrese un documento válido",
+      invalidEmail: "Ingrese un e-mail válido",
+      invalidQuantity: "Ingrese una cantidad válida",
       selectCustomer: "Seleccione un cliente",
       selectTransportType: "Seleccione un tipo de transporte",
-      selectItem: "Seleccione un item",
+      selectItem: "Seleccione un ítem",
       deliveryDateRequired: "Ingrese la fecha de entrega",
-      invalidTime: "Horario invalido",
+      invalidTime: "Horario inválido",
       deliveryWindowEndAfterStart: "El fin de la ventana debe ser mayor que el inicio"
     },
     errors: {
-      genericOperation: "No fue posible completar la operacion",
+      genericOperation: "No fue posible completar la operación",
       saveCustomer: "No fue posible guardar el cliente.",
       duplicateDocument: "Documento ya registrado.",
-      createItem: "No fue posible crear el item.",
+      createItem: "No fue posible crear el ítem.",
       duplicateSku: "SKU ya registrado.",
       saveTransportType: "No fue posible guardar el tipo de transporte.",
       duplicateTransportName: "Nombre ya registrado.",
       createOrder: "No fue posible crear la orden.",
-      invalidCustomer: "Cliente invalido.",
-      invalidTransportType: "Tipo de transporte invalido.",
-      noOrderItems: "Agregue al menos un item a la Orden de Venta.",
-      unauthorizedTransport: "El tipo de transporte no esta autorizado para el cliente seleccionado.",
+      invalidCustomer: "Cliente inválido.",
+      invalidTransportType: "Tipo de transporte inválido.",
+      noOrderItems: "Agregue al menos un ítem a la Orden de Venta.",
+      unauthorizedTransport: "El tipo de transporte no está autorizado para el cliente seleccionado.",
       updateSchedule: "No fue posible actualizar la agenda.",
-      invalidDeliveryDate: "Fecha de entrega invalida.",
-      invalidWindowStart: "Inicio de ventana invalido.",
-      invalidWindowEnd: "Fin de ventana invalido.",
+      invalidDeliveryDate: "Fecha de entrega inválida.",
+      invalidWindowStart: "Inicio de ventana inválido.",
+      invalidWindowEnd: "Fin de ventana inválido.",
       updateStatus: "No fue posible actualizar el estado.",
       updateTransport: "No fue posible cambiar el transporte."
     },
     dashboard: {
       title: "Monitoreo Operacional",
-      description: "Visibilidad del ciclo logistico de las Ordenes de Venta."
+      description: "Visibilidad del ciclo logístico de las Órdenes de Venta."
     },
     orders: {
-      title: "Ordenes de Venta",
+      title: "Órdenes de Venta",
       description: "Consulta, filtros operacionales y acceso a detalles.",
       new: "Nueva Orden",
       createTitle: "Crear Orden de Venta",
-      createDescription: "Asociacion de cliente, transporte autorizado e items registrados.",
-      loading: "Cargando ordenes...",
-      emptyTitle: "No se encontraron Ordenes de Venta",
+      createDescription: "Asociación de cliente, transporte autorizado e ítems registrados.",
+      loading: "Cargando órdenes...",
+      emptyTitle: "No se encontraron Órdenes de Venta",
       emptyDescription: "Ajuste los filtros o cree una nueva Orden de Venta.",
-      code: "Codigo",
+      code: "Código",
       customer: "Cliente",
       transport: "Transporte",
       delivery: "Entrega",
       currentTransport: "Transporte actual",
       deliveryDate: "Fecha de entrega",
       window: "Ventana",
-      detailsDescription: "Detalle, estado, agenda, transporte y auditoria.",
+      detailsDescription: "Detalle, estado, agenda, transporte y auditoría.",
       loadingOne: "Cargando orden...",
       notFound: "Orden no encontrada.",
       salesOrder: "Orden de Venta",
       advanceTo: "Avanzar a {status}",
-      transitionDescription: "La transicion sera validada por la API antes de persistir el cambio.",
+      transitionDescription: "La transición será validada por la API antes de persistir el cambio.",
       advanceStatus: "Avanzar estado",
       authorizedType: "Tipo autorizado",
       change: "Cambiar"
     },
     orderForm: {
       title: "Nueva Orden de Venta",
-      description: "Cliente, transporte autorizado e items registrados.",
+      description: "Cliente, transporte autorizado e ítems registrados.",
       customer: "Cliente",
       transportType: "Tipo de transporte",
-      item: "Item",
+      item: "Ítem",
       quantity: "Cantidad",
       shortQuantity: "Cant.",
       add: "Agregar",
-      removeItem: "Remover item",
+      removeItem: "Remover ítem",
       creating: "Creando...",
       create: "Crear Orden de Venta"
     },
@@ -507,7 +561,7 @@ export const messages = {
     },
     customers: {
       title: "Clientes",
-      description: "Registro, consulta y edicion de clientes.",
+      description: "Registro, consulta y edición de clientes.",
       new: "Nuevo cliente",
       edit: "Editar cliente",
       name: "Nombre",
@@ -518,27 +572,27 @@ export const messages = {
       transports: "Transportes"
     },
     items: {
-      title: "Items",
-      description: "Registro y consulta de items por SKU.",
-      new: "Nuevo item",
-      registered: "Items registrados",
+      title: "Ítems",
+      description: "Registro y consulta de ítems por SKU.",
+      new: "Nuevo ítem",
+      registered: "Ítems registrados",
       sku: "SKU",
       name: "Nombre",
-      descriptionField: "Descripcion",
-      item: "Item"
+      descriptionField: "Descripción",
+      item: "Ítem"
     },
     transportTypes: {
       title: "Tipos de Transporte",
-      description: "Registro, consulta y edicion de modalidades de transporte.",
+      description: "Registro, consulta y edición de modalidades de transporte.",
       new: "Nuevo transporte",
       edit: "Editar transporte",
       registered: "Transportes registrados",
       name: "Nombre",
-      situation: "Situacion"
+      situation: "Situación"
     },
     scheduling: {
       title: "Central de Agenda",
-      description: "Definicion de fecha, ventana de atencion, confirmacion y reagendamiento.",
+      description: "Definición de fecha, ventana de atención, confirmación y reagendamiento.",
       loading: "Cargando agendas...",
       empty: "Ninguna Orden de Venta planificada para agendar.",
       formTitle: "Agenda",
@@ -549,10 +603,10 @@ export const messages = {
       save: "Guardar agenda"
     },
     audit: {
-      title: "Auditoria",
-      loading: "Cargando auditoria...",
+      title: "Auditoría",
+      loading: "Cargando auditoría...",
       emptyTitle: "Sin eventos",
-      emptyDescription: "Esta entidad aun no posee eventos de auditoria.",
+      emptyDescription: "Esta entidad aún no posee eventos de auditoría.",
       previous: "anterior",
       next: "posterior"
     }

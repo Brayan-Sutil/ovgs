@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { useAuth } from "@/auth/provider";
+import { isCompanySession } from "@/auth/session";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
@@ -25,8 +27,10 @@ const ItemsPage = () => {
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
   const tItems = useTranslations("items");
+  const { isReady, session } = useAuth();
+  const isCompany = isCompanySession(session);
   const { locale } = useAppLocale();
-  const itemsQuery = useItems();
+  const itemsQuery = useItems(isReady && isCompany);
   const createItem = useCreateItem();
   const formSchema = useMemo(() => createItemFormSchema(messages[locale].validation), [locale]);
   const {
@@ -93,7 +97,29 @@ const ItemsPage = () => {
         list={
           <div>
             <h2 className="text-base font-semibold text-ink">{tItems("registered")}</h2>
-            <div className="mt-4 overflow-x-auto">
+
+            <div className="mt-4 divide-y divide-line rounded-md border border-line md:hidden">
+              {itemsQuery.data?.map((item) => (
+                <div key={item.id} className="grid gap-3 p-3">
+                  <div className="min-w-0">
+                    <div className="break-words text-sm font-semibold text-ink">{item.name}</div>
+                    <div className="mt-1 break-words text-xs font-semibold uppercase text-slate-500">
+                      {item.sku}
+                    </div>
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-xs font-semibold uppercase text-slate-500">
+                      {tItems("descriptionField")}
+                    </div>
+                    <div className="mt-1 break-words text-sm text-slate-700">
+                      {item.description ?? "-"}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 hidden overflow-x-auto md:block">
               <table className="w-full min-w-[560px] text-left text-sm">
                 <thead className="bg-surface text-xs uppercase text-slate-500">
                   <tr>

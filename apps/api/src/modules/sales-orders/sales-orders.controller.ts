@@ -1,6 +1,10 @@
-import { Body, Controller, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Query, Req } from "@nestjs/common";
 import { ApiTags } from "@nestjs/swagger";
-import { AccessAction, AccessModule } from "../../common/access-control/access-control.types";
+import {
+  AccessAction,
+  AccessModule,
+  AuthenticatedUser
+} from "../../common/access-control/access-control.types";
 import { RequirePermission } from "../../common/access-control/require-permission.decorator";
 import { UpdateSalesOrderScheduleDto } from "../scheduling/dto/update-sales-order-schedule.dto";
 import { CreateSalesOrderDto } from "./dto/create-sales-order.dto";
@@ -8,6 +12,10 @@ import { ListSalesOrdersQueryDto } from "./dto/list-sales-orders-query.dto";
 import { UpdateSalesOrderStatusDto } from "./dto/update-sales-order-status.dto";
 import { UpdateSalesOrderTransportDto } from "./dto/update-sales-order-transport.dto";
 import { SalesOrdersService } from "./sales-orders.service";
+
+type RequestWithUser = {
+  user?: AuthenticatedUser;
+};
 
 @ApiTags("sales-orders")
 @Controller("sales-orders")
@@ -22,14 +30,14 @@ export class SalesOrdersController {
 
   @Get()
   @RequirePermission(AccessModule.SalesOrders, AccessAction.Read)
-  findAll(@Query() query: ListSalesOrdersQueryDto) {
-    return this.salesOrdersService.findAll(query);
+  findAll(@Query() query: ListSalesOrdersQueryDto, @Req() request: RequestWithUser) {
+    return this.salesOrdersService.findAll(query, request.user);
   }
 
   @Get(":id")
   @RequirePermission(AccessModule.SalesOrders, AccessAction.Read)
-  findById(@Param("id") id: string) {
-    return this.salesOrdersService.findById(id);
+  findById(@Param("id") id: string, @Req() request: RequestWithUser) {
+    return this.salesOrdersService.findById(id, request.user);
   }
 
   @Patch(":id/status")

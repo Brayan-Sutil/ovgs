@@ -11,33 +11,35 @@ import {
 } from "./api";
 import { SalesOrderFilters } from "./types";
 
-export const useSalesOrders = (filters: SalesOrderFilters = {}) => {
+export const useSalesOrders = (filters: SalesOrderFilters = {}, enabled = true) => {
   return useQuery({
     queryKey: ["sales-orders", filters],
-    queryFn: () => listSalesOrders(filters)
+    queryFn: () => listSalesOrders(filters),
+    enabled
   });
 };
 
-export const useSchedulableOrders = () => {
+export const useSchedulableOrders = (enabled = true) => {
   return useQuery({
     queryKey: ["scheduling"],
-    queryFn: listSchedulableOrders
+    queryFn: listSchedulableOrders,
+    enabled
   });
 };
 
-export const useSalesOrder = (id: string) => {
+export const useSalesOrder = (id: string, enabled = true) => {
   return useQuery({
     queryKey: ["sales-order", id],
     queryFn: () => getSalesOrder(id),
-    enabled: Boolean(id)
+    enabled: Boolean(id) && enabled
   });
 };
 
-export const useSalesOrderAuditEvents = (id: string) => {
+export const useSalesOrderAuditEvents = (id: string, enabled = true) => {
   return useQuery({
     queryKey: ["sales-order-audit", id],
     queryFn: () => listSalesOrderAuditEvents(id),
-    enabled: Boolean(id)
+    enabled: Boolean(id) && enabled
   });
 };
 

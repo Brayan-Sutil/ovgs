@@ -23,7 +23,7 @@ const bootstrap = async () => {
 
   const config = new DocumentBuilder()
     .setTitle("OVGS API")
-    .setDescription("Sistema de Gestao de Ordens de Venda")
+    .setDescription("Sistema de Gestão de Ordens de Venda")
     .setVersion("1.0.0")
     .build();
 

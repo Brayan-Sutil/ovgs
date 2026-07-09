@@ -5,6 +5,8 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { useMemo } from "react";
 import { useForm } from "react-hook-form";
+import { useAuth } from "@/auth/provider";
+import { isCompanySession } from "@/auth/session";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
@@ -33,8 +35,10 @@ const TransportTypesPage = () => {
   const tCommon = useTranslations("common");
   const tErrors = useTranslations("errors");
   const tTransportTypes = useTranslations("transportTypes");
+  const { isReady, session } = useAuth();
+  const isCompany = isCompanySession(session);
   const { locale } = useAppLocale();
-  const transportTypesQuery = useTransportTypes();
+  const transportTypesQuery = useTransportTypes(isReady && isCompany);
   const createTransportType = useCreateTransportType();
   const updateTransportType = useUpdateTransportType();
   const [editingTransportType, setEditingTransportType] = useState<TransportType | null>(null);
@@ -140,7 +144,30 @@ const TransportTypesPage = () => {
         list={
           <div>
             <h2 className="text-base font-semibold text-ink">{tTransportTypes("registered")}</h2>
-            <div className="mt-4 overflow-x-auto">
+
+            <div className="mt-4 divide-y divide-line rounded-md border border-line md:hidden">
+              {transportTypesQuery.data?.map((transportType) => (
+                <div key={transportType.id} className="flex items-center justify-between gap-3 p-3">
+                  <div className="min-w-0">
+                    <div className="break-words text-sm font-semibold text-ink">
+                      {transportType.name}
+                    </div>
+                    <div className="mt-1 text-xs font-semibold uppercase text-slate-500">
+                      {transportType.active ? tCommon("active") : tCommon("inactive")}
+                    </div>
+                  </div>
+                  <Button
+                    variant="secondary"
+                    className="shrink-0"
+                    onClick={() => setEditingTransportType(transportType)}
+                  >
+                    {tCommon("edit")}
+                  </Button>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 hidden overflow-x-auto md:block">
               <table className="w-full min-w-[520px] text-left text-sm">
                 <thead className="bg-surface text-xs uppercase text-slate-500">
                   <tr>

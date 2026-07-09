@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createTransportType, listTransportTypes, updateTransportType } from "./api";
 
-export const useTransportTypes = () => {
+export const useTransportTypes = (enabled = true) => {
   return useQuery({
     queryKey: ["transport-types"],
-    queryFn: listTransportTypes
+    queryFn: listTransportTypes,
+    enabled
   });
 };
 

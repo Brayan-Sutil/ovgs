@@ -67,10 +67,11 @@ export class SalesOrdersRepository {
     });
   }
 
-  findAll(query: ListSalesOrdersQueryDto) {
+  findAll(query: ListSalesOrdersQueryDto, customerDocument?: string) {
     const where: Prisma.SalesOrderWhereInput = {
       status: query.status,
       customerId: query.customerId,
+      customer: customerDocument ? { document: customerDocument } : undefined,
       transportTypeId: query.transportTypeId,
       createdAt: buildDateRange(query.dateFrom, query.dateTo)
     };
@@ -82,9 +83,12 @@ export class SalesOrdersRepository {
     });
   }
 
-  findById(id: string) {
-    return this.prisma.salesOrder.findUnique({
-      where: { id },
+  findById(id: string, customerDocument?: string) {
+    return this.prisma.salesOrder.findFirst({
+      where: {
+        id,
+        customer: customerDocument ? { document: customerDocument } : undefined
+      },
       include: salesOrderInclude
     });
   }

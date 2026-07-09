@@ -2,22 +2,26 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/auth/provider";
+import { isCompanySession } from "@/auth/session";
 import { ScheduleForm } from "@/components/organisms/ScheduleForm";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { useSchedulableOrders } from "@/features/sales-orders/hooks";
 
 const SchedulingPage = () => {
   const tScheduling = useTranslations("scheduling");
-  const ordersQuery = useSchedulableOrders();
+  const { isReady, session } = useAuth();
+  const isCompany = isCompanySession(session);
+  const ordersQuery = useSchedulableOrders(Boolean(session) && isCompany);
   const orders = ordersQuery.data ?? [];
 
   return (
     <DashboardLayout title={tScheduling("title")} description={tScheduling("description")}>
-      {ordersQuery.isLoading ? (
+      {!isReady || ordersQuery.isLoading ? (
         <div className="rounded-md border border-line bg-white p-5 text-sm">{tScheduling("loading")}</div>
       ) : null}
 
-      {!ordersQuery.isLoading && orders.length === 0 ? (
+      {isReady && !ordersQuery.isLoading && orders.length === 0 ? (
         <div className="rounded-md border border-line bg-white p-5 text-sm">
           {tScheduling("empty")}
         </div>

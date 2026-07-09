@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { useTranslations } from "next-intl";
+import { useAuth } from "@/auth/provider";
+import { isCompanySession } from "@/auth/session";
 import { OrdersTable } from "@/components/organisms/OrdersTable";
 import { DashboardLayout } from "@/components/templates/DashboardLayout";
 import { useSalesOrders } from "@/features/sales-orders/hooks";
@@ -11,19 +13,23 @@ const DashboardPage = () => {
   const tDashboard = useTranslations("dashboard");
   const tOrders = useTranslations("orders");
   const tStatus = useTranslations("status");
-  const ordersQuery = useSalesOrders();
+  const { isReady, session } = useAuth();
+  const isCompany = isCompanySession(session);
+  const ordersQuery = useSalesOrders({}, Boolean(session));
   const orders = ordersQuery.data ?? [];
 
   return (
     <DashboardLayout title={tDashboard("title")} description={tDashboard("description")}>
-      <div className="mb-6 flex justify-end">
-        <Link
-          href="/orders/new"
-          className="inline-flex h-10 items-center justify-center rounded-md bg-brand px-4 text-sm font-semibold text-white hover:bg-teal-800"
-        >
-          {tOrders("new")}
-        </Link>
-      </div>
+      {isCompany ? (
+        <div className="mb-6 flex justify-end">
+          <Link
+            href="/orders/new"
+            className="inline-flex h-10 items-center justify-center rounded-md bg-brand px-4 text-sm font-semibold text-white hover:bg-teal-800"
+          >
+            {tOrders("new")}
+          </Link>
+        </div>
+      ) : null}
       <section className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
         {salesOrderStatuses.map((status) => {
           const total = orders.filter((order) => order.status === status).length;
@@ -37,7 +43,7 @@ const DashboardPage = () => {
           );
         })}
       </section>
-      <OrdersTable orders={orders.slice(0, 8)} loading={ordersQuery.isLoading} />
+      <OrdersTable orders={orders.slice(0, 8)} loading={!isReady || ordersQuery.isLoading} />
     </DashboardLayout>
   );
 };

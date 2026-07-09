@@ -1,8 +1,24 @@
-# OVGS - Sistema de Gestao de Ordens de Venda
+# OVGS - Sistema de Gestão de Ordens de Venda
 
-Implementacao full stack do desafio tecnico para gestao do ciclo de vida de Ordens de Venda.
+Implementação full stack do desafio técnico **Sistema de Gestão de Ordens de Venda (OVGS)**.
 
-A solucao foi desenhada para demonstrar dominio de frontend senior, integracao ponta a ponta e modelagem de regras de negocio no backend, sem adicionar complexidade artificial.
+O projeto centraliza o ciclo de vida de Ordens de Venda, com backend real, banco relacional, interface web, validações, auditoria, controle de acesso e testes automatizados.
+
+## Funcionalidades
+
+- Cadastro, consulta e edição de clientes.
+- Cadastro, consulta e edição de tipos de transporte.
+- Cadastro e consulta de itens.
+- Criação, consulta e detalhamento de Ordens de Venda.
+- Atualização de status no fluxo operacional.
+- Filtros por status, cliente, transporte e data.
+- Central de agendamento com data, janela de atendimento, confirmação e reagendamento.
+- Auditoria de criação de OV, alteração de status, agendamento e transporte.
+- Compartilhamento público de Ordem de Venda por token.
+- Login demonstrativo para empresa e cliente.
+- Visão de cliente em modo somente leitura.
+- Interface responsiva para desktop e mobile web.
+- Internacionalização em português, inglês e espanhol.
 
 ## Stack
 
@@ -14,7 +30,8 @@ Backend:
 - PostgreSQL
 - Prisma
 - Docker Compose
-- Jest e Supertest
+- Jest
+- Supertest
 - Swagger/OpenAPI
 
 Frontend:
@@ -27,45 +44,42 @@ Frontend:
 - Redux Toolkit
 - React Hook Form
 - Zod
+- next-intl
+- Jest
 - React Testing Library
-- React-Toastify
 
-## Controle de acesso
-
-Para manter o desafio focado no dominio, a autenticacao foi simulada por headers HTTP.
-Rotas protegidas exigem:
-
-```txt
-x-user-role: MASTER_ADMIN | OPERATIONS | VIEWER
-x-user-id: identificador-do-usuario
-```
-
-Papeis:
-
-- `MASTER_ADMIN`: acesso total a todos os modulos, CRUD e compartilhamento.
-- `OPERATIONS`: leitura dos cadastros, operacao de OVs, agendamento e auditoria.
-- `VIEWER`: acesso somente leitura.
-
-O frontend envia `MASTER_ADMIN` por padrao para manter a demo operacional. Em producao, essa camada deveria ser substituida por autenticacao real com JWT/sessao e claims de permissao.
-
-## Como executar com Docker
+## Como Rodar Com Docker
 
 ```bash
 docker compose up --build
 ```
 
-Servicos:
+Serviços:
 
 - Web: http://localhost:3001
 - API: http://localhost:3333
 - Swagger: http://localhost:3333/docs
 - PostgreSQL: localhost:15433
 
-O container da API executa `prisma db push` e `prisma db seed` ao iniciar.
+Ao iniciar, o container da API executa automaticamente:
 
-## Como executar localmente
+```bash
+pnpm --filter @ovgs/api db:push
+pnpm --filter @ovgs/api db:seed
+```
 
-Instale as dependencias:
+## Como Usar A Demo
+
+Na tela de login, existem dois perfis:
+
+- **Empresa**: acesso administrativo para cadastros, Ordens de Venda, agendamento, auditoria e compartilhamento.
+- **Cliente**: seleciona um cliente cadastrado e acessa uma visão simples, somente leitura, das próprias Ordens de Venda.
+
+Se não houver cliente cadastrado, a tela informa o problema e orienta o usuário a entrar como empresa para criar o primeiro cadastro.
+
+## Como Rodar Localmente
+
+Instale as dependências:
 
 ```bash
 pnpm install
@@ -74,14 +88,21 @@ pnpm install
 Suba somente o banco:
 
 ```bash
-docker compose up postgres
+docker compose up -d postgres
 ```
 
-Configure as variaveis:
+Crie `apps/api/.env`:
 
-```bash
-cp apps/api/.env.example apps/api/.env
-cp apps/web/.env.example apps/web/.env.local
+```env
+DATABASE_URL="postgresql://ovgs:ovgs@localhost:15433/ovgs?schema=public"
+WEB_ORIGIN="http://localhost:3000"
+PORT=3333
+```
+
+Opcionalmente, crie `apps/web/.env.local`:
+
+```env
+NEXT_PUBLIC_API_URL="http://localhost:3333"
 ```
 
 Prepare o banco:
@@ -98,79 +119,72 @@ Execute API e web:
 pnpm dev
 ```
 
-## Scripts
+No modo local, a web roda em http://localhost:3000 e a API em http://localhost:3333.
+
+## Scripts Úteis
 
 ```bash
 pnpm build
 pnpm test
-pnpm --filter @ovgs/api test
-pnpm --filter @ovgs/web test
 pnpm --filter @ovgs/api build
 pnpm --filter @ovgs/web build
+pnpm --filter @ovgs/api test
+pnpm --filter @ovgs/web test
 ```
 
-## Arquitetura
-
-O repositorio usa monorepo com duas aplicacoes:
+## Estrutura Do Projeto
 
 ```txt
 apps/
   api/
+    prisma/
+    src/
+      common/
+      modules/
+        audit/
+        customers/
+        health/
+        items/
+        sales-orders/
+        scheduling/
+        sharing/
+        transport-types/
   web/
+    src/
+      app/
+      auth/
+      components/
+        atoms/
+        molecules/
+        organisms/
+        templates/
+      features/
+      i18n/
+      lib/
 ```
+
+## Arquitetura
 
 Backend:
 
-```txt
-apps/api/src/
-  common/
-    filters/
-    prisma/
-  modules/
-    audit/
-    customers/
-    items/
-    sales-orders/
-    scheduling/
-    transport-types/
-```
+- API modular em NestJS.
+- Separação entre `controller`, `service`, `repository` e `dto`.
+- Regras de negócio concentradas nos services.
+- Persistência relacional com Prisma.
+- Tratamento global de exceções.
+- Controle de acesso por guard e permissões por módulo/ação.
 
 Frontend:
 
-```txt
-apps/web/src/
-  app/
-  components/
-    atoms/
-    molecules/
-    organisms/
-    templates/
-  features/
-  lib/
-```
+- Next.js App Router.
+- Componentização seguindo Atomic Design.
+- React Query para server state, cache e invalidação.
+- Redux Toolkit apenas para filtros operacionais.
+- React Hook Form e Zod para formulários e validações.
+- Mensagens de erro exibidas diretamente nos campos.
+- next-intl para tradução de textos visíveis.
 
-## Padroes de codigo
-
-- Componentes React, hooks, clients de API e helpers usam declaracao por `const`.
-- Rotas do Next.js declaram o componente como `const Nome = () => {}` e fazem `export default Nome` no final, porque o App Router exige default export em `page.tsx` e `layout.tsx`.
-- Classes foram mantidas apenas onde o framework pede esse padrao, como controllers, services, repositories, guards e modules do NestJS.
-- Regras de negocio nao ficam em componentes React nem controllers: ficam em services e funcoes puras testaveis.
-- Componentes seguem Atomic Design sem criar abstracoes genericas prematuras.
-- Nao ha `any`, `as any`, `console.log` ou TODO nos arquivos de aplicacao.
-
-## Decisoes arquiteturais
-
-- A API usa arquitetura modular do NestJS com `controller`, `service` e `repository`.
-- Regras de negocio ficam nos services, nao no controller nem no frontend.
-- Prisma concentra a persistencia relacional e constraints como SKU unico e documento unico.
-- Auditoria foi modelada como evento generico para permitir rastreabilidade sem acoplar cada entidade a uma tabela diferente.
-- React Query gerencia server state, cache e invalidacao.
-- Redux Toolkit foi usado apenas para filtros operacionais da tela de Ordens, evitando duplicacao de dados da API.
-- Redux Saga nao foi usado porque o dominio implementado nao possui fluxo assincrono orquestrado o bastante para justificar a dependencia.
-- React-Toastify foi usado para feedbacks de sucesso por ser uma biblioteca madura, simples de configurar e com versao recente.
-- Atomic Design foi aplicado com pragmatismo: componentes visuais pequenos, organismos de dominio e templates de pagina.
-
-## Modelagem de dominio
+## Modelagem De Domínio
 
 Entidades principais:
 
@@ -181,48 +195,69 @@ Entidades principais:
 - `SalesOrder`
 - `SalesOrderItem`
 - `AuditEvent`
+- `ShareLink`
 
-Fluxo operacional:
+Fluxo operacional da Ordem de Venda:
 
 ```txt
 CRIADA -> PLANEJADA -> AGENDADA -> EM_TRANSPORTE -> ENTREGUE
 ```
 
-Transicoes fora dessa sequencia sao rejeitadas pela API.
+Transições fora dessa sequência são rejeitadas pela API.
 
-## Regras de negocio implementadas
+## Regras De Negócio
 
-- Cliente pode possuir uma lista de tipos de transporte autorizados.
-- Ordem de Venda so pode ser criada com transporte autorizado para o cliente.
-- Tipo de transporte e cadastravel, sem alterar regra de negocio existente.
-- Ordem de Venda pertence a um unico cliente.
+- Cliente possui uma lista de tipos de transporte autorizados.
+- Ordem de Venda só pode ser criada com transporte autorizado para o cliente.
+- Novos tipos de transporte podem ser cadastrados sem alterar a regra de negócio.
+- Ordem de Venda pertence a um único cliente.
 - Ordem de Venda possui exatamente um tipo de transporte.
 - Ordem de Venda deve conter ao menos um item.
-- Itens possuem SKU unico e precisam existir previamente.
-- Status deve seguir o fluxo operacional valido.
-- Agendamento permite data, janela de atendimento, confirmacao e reagendamento.
-- Alteracao de transporte valida novamente a autorizacao do cliente.
+- Itens precisam estar previamente cadastrados e ativos.
+- SKU de item é único.
+- Status segue o fluxo operacional definido.
+- Agendamento permite data, janela, confirmação e reagendamento.
+- Alteração de transporte valida novamente a autorização do cliente.
+
+## Controle De Acesso
+
+A autenticação é simulada para manter o desafio focado no domínio. As rotas protegidas usam headers:
+
+```txt
+x-user-role: MASTER_ADMIN | OPERATIONS | VIEWER
+x-user-id: identificador-do-usuario
+```
+
+Perfis:
+
+- `MASTER_ADMIN`: acesso total.
+- `OPERATIONS`: operação de Ordens de Venda, agendamento, auditoria e leitura dos cadastros.
+- `VIEWER`: acesso somente leitura.
+
+Na aplicação web, o login demonstrativo cria a sessão de empresa ou cliente e envia os headers esperados pela API.
 
 ## Auditoria
 
 Eventos registrados:
 
-- Criacao de Ordem de Venda
-- Alteracao de status
-- Alteracao de agendamento
-- Alteracao de transporte
+- Criação de Ordem de Venda.
+- Alteração de status.
+- Alteração de agendamento.
+- Alteração de transporte.
 
-Cada evento contem:
+Cada evento guarda:
 
-- data/hora
-- tipo de acao
-- entidade afetada
-- estado anterior
-- estado posterior
+- data e hora;
+- tipo de ação;
+- entidade afetada;
+- estado anterior, quando aplicável;
+- estado posterior, quando aplicável.
 
-## Endpoints principais
+## Endpoints Principais
 
 ```txt
+GET    /health
+
 GET    /customers
 POST   /customers
 PATCH  /customers/:id
@@ -248,7 +283,6 @@ PATCH  /scheduling/:salesOrderId
 GET    /audit-events
 GET    /sales-orders/:id/audit-events
 
-GET    /health
 GET    /shared/sales-orders/:token
 ```
 
@@ -256,57 +290,60 @@ GET    /shared/sales-orders/:token
 
 Backend:
 
-- teste unitario do fluxo de status;
-- teste unitario das regras de negocio de Ordem de Venda;
-- teste de integracao HTTP cobrindo criacao de OV e auditoria.
-- teste de conexao/health check;
-- teste de matriz de permissoes e `MASTER_ADMIN`;
-- teste de acesso a modulos protegidos;
-- teste de bloqueio de CRUD para `VIEWER`;
-- teste de compartilhamento por token.
+- fluxo de status;
+- regras de negócio de Ordem de Venda;
+- health check e conexão com banco;
+- matriz de permissões;
+- acesso a módulos protegidos;
+- bloqueio de escrita para `VIEWER`;
+- acesso total para `MASTER_ADMIN`;
+- compartilhamento por token;
+- integração HTTP para criação de OV e auditoria.
 
 Frontend:
 
-- teste de renderizacao do `StatusBadge`;
-- teste do reducer de filtros operacionais.
+- renderização de componentes;
+- validações de formulários;
+- reducer de filtros operacionais.
 
-## Matriz de cobertura do PDF
+## Cobertura Do Desafio
 
-| Requisito | Cobertura |
+| Requisito do PDF | Implementação |
 | --- | --- |
-| API REST | NestJS controllers por modulo |
-| Modelagem de dominio | Prisma schema com entidades e relacoes |
-| Persistencia relacional | PostgreSQL + Prisma |
-| Regras de negocio | `SalesOrdersService` |
+| API REST | NestJS controllers por módulo |
+| Modelagem de domínio | Prisma schema com entidades e relacionamentos |
+| Persistência relacional | PostgreSQL + Prisma |
+| Regras de negócio | Services da API |
 | Auditoria | `AuditEvent` + `AuditService` |
-| Testes automatizados | Jest, Supertest e RTL |
-| Documentacao | Este README |
-| Docker Compose | Banco, API e Web |
-| Interface grafica | Next.js com Atomic Design |
-| Gestao de OVs | Lista, criacao, detalhe e status |
-| Monitoramento operacional | Dashboard + filtros |
+| Testes automatizados | Jest, Supertest e React Testing Library |
+| Documentação técnica | Este README |
+| Docker Compose | PostgreSQL, API e Web |
+| Interface gráfica | Next.js + Atomic Design |
+| Gestão de OVs | Lista, criação, detalhe, status e transporte |
+| Monitoramento operacional | Dashboard e filtros |
 | Central de agendamento | `/scheduling` |
-| Cadastros basicos | Clientes, transportes e itens |
-| Integracao com APIs | React Query consumindo API real |
-| Tratamento de estados | Loading, empty, error e success simples |
-| Validacoes de entrada | DTOs no backend, Zod/RHF no frontend |
+| Cadastros básicos | Clientes, transportes e itens |
+| Integração com APIs | React Query consumindo a API real |
+| Tratamento de estados | Loading, empty, error e disabled states |
+| Validações de entrada | DTOs no backend, Zod/RHF no frontend |
 | OpenAPI/Swagger | `/docs` |
-| Conexoes | `/health` valida conectividade com banco |
-| Acesso a modulos | Guard por modulo e acao |
-| Master admin | `MASTER_ADMIN` com acesso total testado |
-| Controle de acesso ao CRUD | Escritas bloqueadas para `VIEWER` |
-| Compartilhar | Link publico por token para Ordem de Venda |
+| Segurança/autorização | Guard de permissões por módulo e ação |
+| Compartilhamento | Link público por token |
 
-## Escalabilidade e performance
+## Decisões E Trade-offs
 
-- Filtros operacionais sao aplicados na API, evitando excesso de processamento no cliente.
-- React Query reduz chamadas repetidas e centraliza invalidacao apos mutacoes.
-- A modelagem relacional preserva integridade entre cliente, transporte, item e OV.
-- O fluxo de status esta isolado em funcao pura, facilitando extensao e teste.
+- A autenticação real não foi implementada; foi simulada por headers para focar no domínio do desafio.
+- Redux Saga não foi incluído porque não há fluxo assíncrono complexo o suficiente para justificar a dependência.
+- Clean Architecture completa não foi aplicada para evitar camadas desnecessárias em um projeto pequeno.
+- A auditoria foi modelada de forma genérica para simplificar rastreabilidade e evolução.
+- A disponibilidade de agenda foi mantida simples, conforme permitido pelo enunciado.
+- O frontend usa mensagens inline nos formulários para erros de validação, mantendo o feedback perto do campo.
 
-## Trade-offs
+## Qualidade E Manutenção
 
-- Nao foi incluida autenticacao para manter foco no dominio do desafio.
-- Nao foi criada uma Clean Architecture completa para evitar excesso de camadas em um projeto pequeno.
-- Auditoria foi implementada de forma generica; em producao, poderia evoluir para outbox/eventos ou trilhas por dominio.
-- A central de agendamento usa disponibilidade simplificada, conforme permitido no enunciado.
+- Código TypeScript tipado.
+- Separação clara entre domínio, persistência e interface.
+- Componentes reutilizáveis sem abstrações genéricas prematuras.
+- Regras críticas cobertas por testes.
+- Filtros aplicados na API para reduzir processamento no cliente.
+- React Query evita chamadas duplicadas e centraliza invalidação após mutações.

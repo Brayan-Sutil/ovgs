@@ -26,7 +26,7 @@ describe("customerFormSchema", () => {
     expect(result.success).toBe(false);
 
     if (!result.success) {
-      expect(result.error.flatten().fieldErrors.email).toEqual(["Informe um e-mail valido"]);
+      expect(result.error.flatten().fieldErrors.email).toEqual(["Informe um e-mail válido"]);
     }
   });
 });

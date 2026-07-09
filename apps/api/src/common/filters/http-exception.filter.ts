@@ -30,7 +30,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
       response.status(HttpStatus.CONFLICT).json({
         statusCode: HttpStatus.CONFLICT,
         error: {
-          message: "Ja existe um registro cadastrado com este valor.",
+          message: "Já existe um registro cadastrado com este valor.",
           fields
         },
         timestamp: new Date().toISOString()

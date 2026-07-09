@@ -40,7 +40,7 @@ export class SharingService {
       shareLink.entityType !== "SalesOrder" ||
       isExpired(shareLink.expiresAt)
     ) {
-      throw new NotFoundException("Link de compartilhamento nao encontrado");
+      throw new NotFoundException("Link de compartilhamento não encontrado");
     }
 
     return this.salesOrdersService.findById(shareLink.entityId);

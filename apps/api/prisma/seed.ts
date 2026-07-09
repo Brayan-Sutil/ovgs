@@ -3,10 +3,15 @@ import { Prisma, PrismaClient, SalesOrderStatus } from "@prisma/client";
 const prisma = new PrismaClient();
 
 const main = async () => {
-  const caminhao = await prisma.transportType.upsert({
+  await prisma.transportType.updateMany({
     where: { name: "Caminhao" },
+    data: { name: "Caminhão" }
+  });
+
+  const caminhao = await prisma.transportType.upsert({
+    where: { name: "Caminhão" },
     update: { active: true },
-    create: { name: "Caminhao" }
+    create: { name: "Caminhão" }
   });
 
   const carreta = await prisma.transportType.upsert({

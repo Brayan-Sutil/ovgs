@@ -3,6 +3,8 @@
 import { ArrowRight, Truck } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
+import { useAuth } from "@/auth/provider";
+import { isCompanySession } from "@/auth/session";
 import { Button } from "@/components/atoms/Button";
 import { Select } from "@/components/atoms/Select";
 import { ConfirmDialog } from "@/components/molecules/ConfirmDialog";
@@ -23,7 +25,9 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
   const tOrders = useTranslations("orders");
   const tOrderForm = useTranslations("orderForm");
   const tStatus = useTranslations("status");
+  const { session } = useAuth();
   const { locale } = useAppLocale();
+  const canManageOrder = isCompanySession(session);
   const updateStatus = useUpdateSalesOrderStatus(order.id);
   const updateTransport = useUpdateSalesOrderTransport(order.id);
   const [transportTypeId, setTransportTypeId] = useState(order.transportTypeId);
@@ -94,7 +98,29 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
 
       <section className="min-w-0 rounded-md border border-line bg-white p-5">
         <h3 className="text-base font-semibold text-ink">{tItems("title")}</h3>
-        <div className="mt-4 overflow-x-auto rounded-md border border-line">
+
+        <div className="mt-4 divide-y divide-line rounded-md border border-line md:hidden">
+          {order.items.map((orderItem) => (
+            <div key={orderItem.itemId} className="grid gap-3 p-3">
+              <div className="min-w-0">
+                <div className="break-words text-sm font-semibold text-ink">
+                  {orderItem.item.name}
+                </div>
+                <div className="mt-1 break-words text-xs font-semibold uppercase text-slate-500">
+                  {orderItem.item.sku}
+                </div>
+              </div>
+              <div className="flex items-center justify-between gap-4 text-sm">
+                <span className="text-xs font-semibold uppercase text-slate-500">
+                  {tOrderForm("shortQuantity")}
+                </span>
+                <span className="font-semibold text-ink">{orderItem.quantity}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="mt-4 hidden overflow-x-auto rounded-md border border-line md:block">
           <table className="w-full min-w-[520px] text-left text-sm">
             <thead className="bg-surface text-xs uppercase text-slate-500">
               <tr>
@@ -116,7 +142,7 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
         </div>
       </section>
 
-      {order.nextStatus ? (
+      {canManageOrder && order.nextStatus ? (
         <ConfirmDialog
           title={tOrders("advanceTo", { status: tStatus(order.nextStatus) })}
           description={tOrders("transitionDescription")}
@@ -130,41 +156,43 @@ export const OrderDetailsPanel = ({ order }: { order: SalesOrder }) => {
         <div className="rounded-md bg-red-50 p-3 text-sm font-medium text-danger">{statusError}</div>
       ) : null}
 
-      <section className="min-w-0 rounded-md border border-line bg-white p-5">
-        <h3 className="flex items-center gap-2 text-base font-semibold text-ink">
-          <Truck size={18} aria-hidden />
-          {tOrders("transport")}
-        </h3>
-        <div className="mt-4 grid min-w-0 gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
-          <FormField label={tOrders("authorizedType")} error={transportError ?? undefined}>
-            <Select
-              aria-invalid={Boolean(transportError)}
-              value={transportTypeId}
-              onChange={(event) => {
-                setTransportTypeId(event.target.value);
-                setTransportError(null);
-              }}
-            >
-              {authorizedTransportTypes.map((transportType) => (
-                <option key={transportType.id} value={transportType.id}>
-                  {transportType.name}
-                </option>
-              ))}
-            </Select>
-          </FormField>
-          <div className="flex min-w-0 items-end">
-            <Button
-              variant="secondary"
-              className="w-full sm:w-auto"
-              disabled={transportTypeId === order.transportTypeId || updateTransport.isPending}
-              onClick={changeTransport}
-            >
-              <ArrowRight size={16} aria-hidden />
-              {tOrders("change")}
-            </Button>
+      {canManageOrder ? (
+        <section className="min-w-0 rounded-md border border-line bg-white p-5">
+          <h3 className="flex items-center gap-2 text-base font-semibold text-ink">
+            <Truck size={18} aria-hidden />
+            {tOrders("transport")}
+          </h3>
+          <div className="mt-4 grid min-w-0 gap-4 sm:grid-cols-[minmax(0,1fr)_auto]">
+            <FormField label={tOrders("authorizedType")} error={transportError ?? undefined}>
+              <Select
+                aria-invalid={Boolean(transportError)}
+                value={transportTypeId}
+                onChange={(event) => {
+                  setTransportTypeId(event.target.value);
+                  setTransportError(null);
+                }}
+              >
+                {authorizedTransportTypes.map((transportType) => (
+                  <option key={transportType.id} value={transportType.id}>
+                    {transportType.name}
+                  </option>
+                ))}
+              </Select>
+            </FormField>
+            <div className="flex min-w-0 items-end">
+              <Button
+                variant="secondary"
+                className="w-full sm:w-auto"
+                disabled={transportTypeId === order.transportTypeId || updateTransport.isPending}
+                onClick={changeTransport}
+              >
+                <ArrowRight size={16} aria-hidden />
+                {tOrders("change")}
+              </Button>
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
     </div>
   );
 };

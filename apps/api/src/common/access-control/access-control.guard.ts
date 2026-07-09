@@ -27,7 +27,7 @@ export class AccessControlGuard implements CanActivate {
     const role = parseUserRole(request.headers["x-user-role"]);
 
     if (!role) {
-      throw new UnauthorizedException("Perfil de acesso nao informado ou invalido");
+      throw new UnauthorizedException("Perfil de acesso não informado ou inválido");
     }
 
     request.user = {
@@ -36,7 +36,7 @@ export class AccessControlGuard implements CanActivate {
     };
 
     if (!hasPermission(role, policy)) {
-      throw new ForbiddenException("Perfil sem permissao para executar esta acao");
+      throw new ForbiddenException("Perfil sem permissão para executar esta ação");
     }
 
     return true;

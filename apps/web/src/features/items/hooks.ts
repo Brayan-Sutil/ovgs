@@ -1,10 +1,11 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createItem, listItems } from "./api";
 
-export const useItems = () => {
+export const useItems = (enabled = true) => {
   return useQuery({
     queryKey: ["items"],
-    queryFn: listItems
+    queryFn: listItems,
+    enabled
   });
 };
 

@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { SalesOrderStatus } from "@prisma/client";
+import { AuthenticatedUser, UserRole } from "../../common/access-control/access-control.types";
 import { AuditService } from "../audit/audit.service";
 import { AuditActions } from "../audit/audit.types";
 import { UpdateSalesOrderScheduleDto } from "../scheduling/dto/update-sales-order-schedule.dto";
@@ -38,15 +39,18 @@ export class SalesOrdersService {
     return order;
   }
 
-  findAll(query: ListSalesOrdersQueryDto) {
-    return this.salesOrdersRepository.findAll(query);
+  findAll(query: ListSalesOrdersQueryDto, user?: AuthenticatedUser) {
+    return this.salesOrdersRepository.findAll(query, getCustomerDocumentScope(user));
   }
 
-  async findById(id: string) {
-    const order = await this.salesOrdersRepository.findById(id);
+  async findById(id: string, user?: AuthenticatedUser) {
+    const order = await this.salesOrdersRepository.findById(
+      id,
+      getCustomerDocumentScope(user)
+    );
 
     if (!order) {
-      throw new NotFoundException("Ordem de Venda nao encontrada");
+      throw new NotFoundException("Ordem de Venda não encontrada");
     }
 
     return {
@@ -60,7 +64,7 @@ export class SalesOrdersService {
 
     if (!canTransitionSalesOrderStatus(order.status, dto.status)) {
       throw new BadRequestException(
-        `Transicao invalida de ${order.status} para ${dto.status}`
+        `Transição inválida de ${order.status} para ${dto.status}`
       );
     }
 
@@ -136,7 +140,7 @@ export class SalesOrdersService {
     const order = await this.salesOrdersRepository.findById(id);
 
     if (!order) {
-      throw new NotFoundException("Ordem de Venda nao encontrada");
+      throw new NotFoundException("Ordem de Venda não encontrada");
     }
 
     return order;
@@ -149,11 +153,11 @@ export class SalesOrdersService {
     ]);
 
     if (!customer) {
-      throw new NotFoundException("Cliente nao encontrado");
+      throw new NotFoundException("Cliente não encontrado");
     }
 
     if (!transportType || !transportType.active) {
-      throw new NotFoundException("Tipo de transporte nao encontrado ou inativo");
+      throw new NotFoundException("Tipo de transporte não encontrado ou inativo");
     }
 
     const isAuthorized = customer.authorizedTransportTypes.some(
@@ -162,7 +166,7 @@ export class SalesOrdersService {
 
     if (!isAuthorized) {
       throw new BadRequestException(
-        "Tipo de transporte nao autorizado para o cliente selecionado"
+        "Tipo de transporte não autorizado para o cliente selecionado"
       );
     }
   }
@@ -201,6 +205,10 @@ const getScheduleStatusPatch = (status: SalesOrderStatus, shouldConfirm: boolean
 const generateSalesOrderCode = () => {
   const suffix = randomUUID().slice(0, 8).toUpperCase();
   return `OV-${suffix}`;
+};
+
+const getCustomerDocumentScope = (user?: AuthenticatedUser) => {
+  return user?.role === UserRole.Viewer ? user.id : undefined;
 };
 
 const snapshotSalesOrder = (order: {

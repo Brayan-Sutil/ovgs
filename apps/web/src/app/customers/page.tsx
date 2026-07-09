@@ -4,6 +4,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useTranslations } from "next-intl";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
+import { useAuth } from "@/auth/provider";
+import { isCompanySession } from "@/auth/session";
 import { Button } from "@/components/atoms/Button";
 import { Input } from "@/components/atoms/Input";
 import { FormField } from "@/components/molecules/FormField";
@@ -28,9 +30,11 @@ const CustomersPage = () => {
   const tCommon = useTranslations("common");
   const tCustomers = useTranslations("customers");
   const tErrors = useTranslations("errors");
+  const { isReady, session } = useAuth();
+  const isCompany = isCompanySession(session);
   const { locale } = useAppLocale();
-  const customersQuery = useCustomers();
-  const transportTypesQuery = useTransportTypes();
+  const customersQuery = useCustomers(isReady && isCompany);
+  const transportTypesQuery = useTransportTypes(isReady && isCompany);
   const createCustomer = useCreateCustomer();
   const updateCustomer = useUpdateCustomer();
   const [editingCustomer, setEditingCustomer] = useState<Customer | null>(null);
@@ -105,6 +109,10 @@ const CustomersPage = () => {
     reset(emptyForm);
     clearErrors();
   };
+  const getAuthorizedTransportNames = (customer: Customer) =>
+    customer.authorizedTransportTypes
+      .map((authorization) => authorization.transportType.name)
+      .join(", ") || "-";
 
   return (
     <DashboardLayout title={tCustomers("title")} description={tCustomers("description")}>
@@ -161,7 +169,36 @@ const CustomersPage = () => {
         list={
           <div>
             <h2 className="text-base font-semibold text-ink">{tCustomers("registered")}</h2>
-            <div className="mt-4 overflow-x-auto">
+
+            <div className="mt-4 divide-y divide-line rounded-md border border-line md:hidden">
+              {customersQuery.data?.map((customer) => (
+                <div key={customer.id} className="grid gap-3 p-3">
+                  <div className="flex items-start justify-between gap-3">
+                    <div className="min-w-0">
+                      <h3 className="break-words text-sm font-semibold text-ink">{customer.name}</h3>
+                      <p className="mt-1 break-words text-xs text-slate-500">{customer.document}</p>
+                    </div>
+                    <Button
+                      variant="secondary"
+                      className="shrink-0"
+                      onClick={() => setEditingCustomer(customer)}
+                    >
+                      {tCommon("edit")}
+                    </Button>
+                  </div>
+                  <div>
+                    <div className="text-xs font-semibold uppercase text-slate-500">
+                      {tCustomers("transports")}
+                    </div>
+                    <div className="mt-1 break-words text-sm text-slate-700">
+                      {getAuthorizedTransportNames(customer)}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+
+            <div className="mt-4 hidden overflow-x-auto md:block">
               <table className="w-full min-w-[640px] text-left text-sm">
                 <thead className="bg-surface text-xs uppercase text-slate-500">
                   <tr>
@@ -177,9 +214,7 @@ const CustomersPage = () => {
                       <td className="px-3 py-2 font-semibold">{customer.name}</td>
                       <td className="px-3 py-2">{customer.document}</td>
                       <td className="px-3 py-2">
-                        {customer.authorizedTransportTypes
-                          .map((authorization) => authorization.transportType.name)
-                          .join(", ") || "-"}
+                        {getAuthorizedTransportNames(customer)}
                       </td>
                       <td className="px-3 py-2 text-right">
                         <Button variant="secondary" onClick={() => setEditingCustomer(customer)}>

@@ -224,7 +224,7 @@ export const OrderForm = () => {
         </FormField>
 
         <div className="flex items-end">
-          <Button type="button" variant="secondary" onClick={addItem}>
+          <Button type="button" variant="secondary" className="w-full md:w-auto" onClick={addItem}>
             <Plus size={16} aria-hidden />
             {tOrderForm("add")}
           </Button>
@@ -233,7 +233,40 @@ export const OrderForm = () => {
 
       {selectedItems.length > 0 ? (
         <div className="overflow-hidden rounded-md border border-line">
-          <table className="w-full text-left text-sm">
+          <div className="divide-y divide-line md:hidden">
+            {selectedItems.map((item) => (
+              <div key={item.itemId} className="grid gap-3 p-3">
+                <div className="flex items-start justify-between gap-3">
+                  <div className="min-w-0">
+                    <div className="break-words text-sm font-semibold text-ink">{item.name}</div>
+                    <div className="mt-1 break-words text-xs font-semibold uppercase text-slate-500">
+                      {item.sku}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md text-danger hover:bg-red-50"
+                    onClick={() =>
+                      setSelectedItems((currentItems) =>
+                        currentItems.filter((currentItem) => currentItem.itemId !== item.itemId)
+                      )
+                    }
+                    aria-label={tOrderForm("removeItem")}
+                  >
+                    <Trash2 size={16} aria-hidden />
+                  </button>
+                </div>
+                <div className="flex items-center justify-between gap-4 text-sm">
+                  <span className="text-xs font-semibold uppercase text-slate-500">
+                    {tOrderForm("shortQuantity")}
+                  </span>
+                  <span className="font-semibold text-ink">{item.quantity}</span>
+                </div>
+              </div>
+            ))}
+          </div>
+
+          <table className="hidden w-full text-left text-sm md:table">
             <thead className="bg-surface text-xs uppercase text-slate-500">
               <tr>
                 <th className="px-3 py-2">SKU</th>
@@ -276,7 +309,7 @@ export const OrderForm = () => {
       ) : null}
 
       <div className="flex justify-end">
-        <Button type="submit" disabled={createOrder.isPending}>
+        <Button type="submit" className="w-full sm:w-auto" disabled={createOrder.isPending}>
           {createOrder.isPending ? tOrderForm("creating") : tOrderForm("create")}
         </Button>
       </div>
