@@ -2,25 +2,9 @@
 
 ## Ambiente Publicado
 
-Aplicação web:
-
-- https://ovgs-web.vercel.app/login
-
-API:
-
-- https://ovgs-api.onrender.com
-
-Health check:
-
-- https://ovgs-api.onrender.com/health
-
-Infraestrutura:
-
-- Frontend: Vercel
-- Backend: Render Web Service
-- Banco de dados: Neon PostgreSQL
-
-Observação: o backend está no plano gratuito do Render. Após um período sem uso, a primeira requisição pode demorar alguns segundos porque a instância precisa acordar.
+- Aplicação web: https://ovgs-web.vercel.app/login
+- API: https://ovgs-api.onrender.com
+- Health check: https://ovgs-api.onrender.com/health
 
 Implementação full stack do desafio técnico **Sistema de Gestão de Ordens de Venda (OVGS)**.
 
